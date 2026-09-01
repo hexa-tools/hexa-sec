@@ -1,49 +1,1286 @@
-scan_asset:
-  tool: scan_asset
-  questions:
-  - "Scan the host 10.0.0.1 for vulnerabilities"
-  - "Run a full network scan on 10.0.0.5 and list every open service"
-  - "Check the staging web app for SQL injection and XSS"
-  - "Scan the acme/web-app repository for leaked secrets"
-  - "Audit the apache-gateway container image for known CVEs"
-  description: Launch the configured scanners on an asset (mandate required) and normalize their findings into the domain
+# intent_examples.yaml — the hexa-sec intent contract.
+# One block per scanner tool (key = exact tool name). Each block has:
+#   tool: the exact MCP/scanner tool name
+#   questions: >= 5 example questions
+#   description: one line.
+# Generated from packs/scanners.yml. Never commit real secrets here.
 
-correlate:
-  tool: correlate
+web_vuln_scan_burp:
+  tool: web_vuln_scan_burp
   questions:
-  - "Cross the findings from the last scan to find attack chains"
-  - "Are there exposed ports, SQL injection and a committed token on the same host?"
-  - "Find the weakest link that ties all the critical findings together"
-  - "Turn the raw scanner noise into a prioritized set of real exposures"
-  - "Which findings together would let an attacker reach the ERP system?"
-  description: Deterministically cross findings into attack chains, exposure, noise-reduction, temporal, compliance and business-impact correlations
+  - "Scan the payment app with Burp for OWASP Top 10 vulnerabilities"
+  - "Run an active scan on the admin portal and export findings"
+  - "Run Burp Suite against the target for a security audit"
+  - "Is Burp Suite available and up to date for this engagement?"
+  - "Scan the primary target with Burp Suite and summarize the findings"
+  description: Burp Suite — comprehensive web app vulnerability scanning
 
-score_report:
-  tool: score_report
+web_vuln_scan_zap:
+  tool: web_vuln_scan_zap
   questions:
-  - "Score the report and tell me what to fix first"
-  - "Rank these findings by severity, exploitability and business impact"
-  - "Give me a 0-100 risk score for this scan and what drives it"
-  - "What are the top five things I should solve this week?"
-  - "Order the fixes by effort versus impact"
-  description: Score and order the fix-first priorities (severity x exploitability x exposure x impact x effort)
+  - "Run an automated ZAP scan against the staging environment"
+  - "Check for SQLi and XSS with ZAP on the checkout service"
+  - "Run OWASP ZAP against the target for a security audit"
+  - "Is OWASP ZAP available and up to date for this engagement?"
+  - "Scan the primary target with OWASP ZAP and summarize the findings"
+  description: OWASP ZAP — open-source web vulnerability scanner
 
-manage_mandate:
-  tool: manage_mandate
+web_cve_templates_nuclei:
+  tool: web_cve_templates_nuclei
   questions:
-  - "Register the signed mandate for the ACME engagement"
-  - "Add a mandate covering 10.0.0.0/24 for the next 90 days"
-  - "Record the client authorization for an offensive security test"
-  - "Is the 10.0.0.1 scan authorized? Show me the current mandate"
-  - "Extend the mandate for the checkout application through end of year"
-  description: Record the signed legal mandate (law Godfrain) that authorizes every scan
+  - "Run nuclei against the public API endpoints with critical severity only"
+  - "Scan the new microservice for known CVEs using nuclei templates"
+  - "Run Nuclei against the target for a security audit"
+  - "Is Nuclei available and up to date for this engagement?"
+  - "Scan the primary target with Nuclei and summarize the findings"
+  description: Nuclei — vulnerability templates scanner (ProjectDiscovery)
 
-generate_report:
-  tool: generate_report
+web_wordpress_audit:
+  tool: web_wordpress_audit
   questions:
-  - "Generate the client-ready security report for scan 12873"
-  - "Produce the fix-first report with the global score and top 5"
-  - "Export the report for this scan as Markdown for the client"
-  - "Give me the full audit report with correlations and compliance breakdown"
-  - "Write the summary report with the top priority fixes first"
-  description: Produce the 5-section client report (score, top-5 fixes, correlations, technical detail, compliance)
+  - "Check our WordPress site for vulnerable plugins and themes"
+  - "WPScan the marketing site and report any high-risk issues"
+  - "Run WPScan against the target for a security audit"
+  - "Is WPScan available and up to date for this engagement?"
+  - "Scan the primary target with WPScan and summarize the findings"
+  description: WPScan — WordPress vulnerability and plugin scanner
+
+web_server_misconfig_nikto:
+  tool: web_server_misconfig_nikto
+  questions:
+  - "Nikto scan the webserver for default files and outdated versions"
+  - "Run Nikto against the target for a security audit"
+  - "Is Nikto available and up to date for this engagement?"
+  - "Scan the primary target with Nikto and summarize the findings"
+  - "What did Nikto report on the latest run?"
+  description: Nikto — web server misconfiguration and outdated files scanner
+
+web_deep_scan_arachni:
+  tool: web_deep_scan_arachni
+  questions:
+  - "Run Arachni on the new API gateway for deep security analysis"
+  - "Run Arachni against the target for a security audit"
+  - "Is Arachni available and up to date for this engagement?"
+  - "Scan the primary target with Arachni and summarize the findings"
+  - "What did Arachni report on the latest run?"
+  description: Arachni — full-featured web application security scanner
+
+web_sql_injection_test:
+  tool: web_sql_injection_test
+  questions:
+  - "Test the login endpoint for SQL injection with sqlmap (mandate required)"
+  - "Run sqlmap against the target for a security audit"
+  - "Is sqlmap available and up to date for this engagement?"
+  - "Scan the primary target with sqlmap and summarize the findings"
+  - "What did sqlmap report on the latest run?"
+  description: sqlmap — automated SQL injection exploitation testing
+
+web_dir_bruteforce:
+  tool: web_dir_bruteforce
+  questions:
+  - "Find hidden admin paths on the main domain using dirsearch"
+  - "Run dirsearch against the target for a security audit"
+  - "Is dirsearch available and up to date for this engagement?"
+  - "Scan the primary target with dirsearch and summarize the findings"
+  - "What did dirsearch report on the latest run?"
+  description: dirsearch — hidden directory and file discovery
+
+web_fuzzing_ffuf:
+  tool: web_fuzzing_ffuf
+  questions:
+  - "Fuzz for subdomains on the corporate domain with ffuf"
+  - "Run ffuf against the target for a security audit"
+  - "Is ffuf available and up to date for this engagement?"
+  - "Scan the primary target with ffuf and summarize the findings"
+  - "What did ffuf report on the latest run?"
+  description: ffuf — fast fuzzing for directories, parameters, and subdomains
+
+web_dns_bruteforce_gobuster:
+  tool: web_dns_bruteforce_gobuster
+  questions:
+  - "Gobuster the main site for backup and config files"
+  - "Run Gobuster against the target for a security audit"
+  - "Is Gobuster available and up to date for this engagement?"
+  - "Scan the primary target with Gobuster and summarize the findings"
+  - "What did Gobuster report on the latest run?"
+  description: Gobuster — brute-force directories and DNS subdomains
+
+web_command_injection_commix:
+  tool: web_command_injection_commix
+  questions:
+  - "Test the web endpoints for command injection with commix (mandate required)"
+  - "Commix to detect OS command injection on the file upload API (mandate)"
+  - "Run Commix against the target for a security audit"
+  - "Is Commix available and up to date for this engagement?"
+  - "Scan the primary target with Commix and summarize the findings"
+  description: Commix — automated OS command injection testing
+
+web_xss_advanced:
+  tool: web_xss_advanced
+  questions:
+  - "Run XSStrike to detect XSS in the search parameter (mandate required)"
+  - "Run XSStrike against the target for a security audit"
+  - "Is XSStrike available and up to date for this engagement?"
+  - "Scan the primary target with XSStrike and summarize the findings"
+  - "What did XSStrike report on the latest run?"
+  description: XSStrike — advanced XSS payload detection
+
+web_template_injection_tplmap:
+  tool: web_template_injection_tplmap
+  questions:
+  - "Tplmap to detect SSTI on the profile page (mandate required)"
+  - "Run Tplmap against the target for a security audit"
+  - "Is Tplmap available and up to date for this engagement?"
+  - "Scan the primary target with Tplmap and summarize the findings"
+  - "What did Tplmap report on the latest run?"
+  description: Tplmap — Server-Side Template Injection (SSTI) detection
+
+web_sql_injection_gui:
+  tool: web_sql_injection_gui
+  questions:
+  - "jSQL Injection to test the login form for SQLi (mandate)"
+  - "Run jSQL Injection against the target for a security audit"
+  - "Is jSQL Injection available and up to date for this engagement?"
+  - "Scan the primary target with jSQL Injection and summarize the findings"
+  - "What did jSQL Injection report on the latest run?"
+  description: jSQL Injection — graphical SQL injection testing
+
+web_param_discovery_arjun:
+  tool: web_param_discovery_arjun
+  questions:
+  - "Arjun to discover hidden parameters on the payment API (mandate)"
+  - "Run Arjun against the target for a security audit"
+  - "Is Arjun available and up to date for this engagement?"
+  - "Scan the primary target with Arjun and summarize the findings"
+  - "What did Arjun report on the latest run?"
+  description: Arjun — hidden HTTP parameter discovery
+
+web_fuzzing_wfuzz:
+  tool: web_fuzzing_wfuzz
+  questions:
+  - "Wfuzz to fuzz the API for injection points (mandate)"
+  - "Run Wfuzz against the target for a security audit"
+  - "Is Wfuzz available and up to date for this engagement?"
+  - "Scan the primary target with Wfuzz and summarize the findings"
+  - "What did Wfuzz report on the latest run?"
+  description: Wfuzz — web fuzzing for parameters and payloads
+
+web_api_discovery_kiterunner:
+  tool: web_api_discovery_kiterunner
+  questions:
+  - "Kiterunner to discover hidden API routes on the service"
+  - "Run Kiterunner against the target for a security audit"
+  - "Is Kiterunner available and up to date for this engagement?"
+  - "Scan the primary target with Kiterunner and summarize the findings"
+  - "What did Kiterunner report on the latest run?"
+  description: Kiterunner — API endpoint / route discovery
+
+web_historical_urls:
+  tool: web_historical_urls
+  questions:
+  - "gau to gather historical URLs of the target for recon"
+  - "Run waybackurls / gau against the target for a security audit"
+  - "Is waybackurls / gau available and up to date for this engagement?"
+  - "Scan the primary target with waybackurls / gau and summarize the findings"
+  - "What did waybackurls / gau report on the latest run?"
+  description: waybackurls / gau — historical URLs and endpoints from archives
+
+web_http_probe_httpx:
+  tool: web_http_probe_httpx
+  questions:
+  - "httpx to probe the discovered hosts for live endpoints"
+  - "Run httpx against the target for a security audit"
+  - "Is httpx available and up to date for this engagement?"
+  - "Scan the primary target with httpx and summarize the findings"
+  - "What did httpx report on the latest run?"
+  description: httpx — fast HTTP probing (ProjectDiscovery)
+
+network_enterprise_cve_scan:
+  tool: network_enterprise_cve_scan
+  questions:
+  - "Run a Nessus scan of the production subnet and correlate findings"
+  - "Get the Nessus report for the DMZ hosts and prioritize fixes"
+  - "Run Nessus against the target for a security audit"
+  - "Is Nessus available and up to date for this engagement?"
+  - "Scan the primary target with Nessus and summarize the findings"
+  description: Nessus (Tenable) — enterprise vulnerability scanner
+
+network_opensource_cve_scan:
+  tool: network_opensource_cve_scan
+  questions:
+  - "OpenVAS scan the internal network for missing patches"
+  - "Run OpenVAS against the target for a security audit"
+  - "Is OpenVAS available and up to date for this engagement?"
+  - "Scan the primary target with OpenVAS and summarize the findings"
+  - "What did OpenVAS report on the latest run?"
+  description: OpenVAS — open-source vulnerability scanner (Nessus alternative)
+
+network_cloud_cve_scan:
+  tool: network_cloud_cve_scan
+  questions:
+  - "Trigger a Qualys scan on the external perimeter and fetch results"
+  - "Run Qualys against the target for a security audit"
+  - "Is Qualys available and up to date for this engagement?"
+  - "Scan the primary target with Qualys and summarize the findings"
+  - "What did Qualys report on the latest run?"
+  description: Qualys — cloud-based vulnerability scanner
+
+network_port_discovery:
+  tool: network_port_discovery
+  questions:
+  - "Nmap scan the staging environment for open ports and versions"
+  - "Run Nmap against the target for a security audit"
+  - "Is Nmap available and up to date for this engagement?"
+  - "Scan the primary target with Nmap and summarize the findings"
+  - "What did Nmap report on the latest run?"
+  description: Nmap — port and service discovery
+
+network_fast_port_scan:
+  tool: network_fast_port_scan
+  questions:
+  - "Masscan the whole corporate IP range to build an asset inventory"
+  - "Run Masscan against the target for a security audit"
+  - "Is Masscan available and up to date for this engagement?"
+  - "Scan the primary target with Masscan and summarize the findings"
+  - "What did Masscan report on the latest run?"
+  description: Masscan — ultra-fast port scanner for large IP ranges
+
+network_internet_scan:
+  tool: network_internet_scan
+  questions:
+  - "Zmap the public IP ranges for unexpected open services"
+  - "Run Zmap against the target for a security audit"
+  - "Is Zmap available and up to date for this engagement?"
+  - "Scan the primary target with Zmap and summarize the findings"
+  - "What did Zmap report on the latest run?"
+  description: Zmap — internet-wide scanning for open services
+
+network_local_discovery_arp:
+  tool: network_local_discovery_arp
+  questions:
+  - "Netdiscover the local subnet to find unauthorized devices"
+  - "Run Netdiscover against the target for a security audit"
+  - "Is Netdiscover available and up to date for this engagement?"
+  - "Scan the primary target with Netdiscover and summarize the findings"
+  - "What did Netdiscover report on the latest run?"
+  description: Netdiscover — ARP-based local network device discovery
+
+network_login_bruteforce:
+  tool: network_login_bruteforce
+  questions:
+  - "Hydra to test SSH brute-force resistance on the bastion (mandate required)"
+  - "Check the web login for weak credentials with hydra (mandate required)"
+  - "Brute-force test the FTP service account strength with hydra (mandate)"
+  - "Run Hydra against the target for a security audit"
+  - "Is Hydra available and up to date for this engagement?"
+  description: Hydra (THC) — online password brute-force against SSH, HTTP(S), RDP, FTP
+
+network_password_crack_john:
+  tool: network_password_crack_john
+  questions:
+  - "John the Ripper to test the strength of dumped hashes"
+  - "Run John the Ripper against the target for a security audit"
+  - "Is John the Ripper available and up to date for this engagement?"
+  - "Scan the primary target with John the Ripper and summarize the findings"
+  - "What did John the Ripper report on the latest run?"
+  description: John the Ripper — offline password cracking
+
+network_fast_bruteforce_ncrack:
+  tool: network_fast_bruteforce_ncrack
+  questions:
+  - "Ncrack to test SSH/RDP credential strength (mandate required)"
+  - "Run Ncrack against the target for a security audit"
+  - "Is Ncrack available and up to date for this engagement?"
+  - "Scan the primary target with Ncrack and summarize the findings"
+  - "What did Ncrack report on the latest run?"
+  description: Ncrack — high-speed network authentication brute-force
+
+network_parallel_bruteforce_medusa:
+  tool: network_parallel_bruteforce_medusa
+  questions:
+  - "Medusa to audit the FTP/Telnet service for weak logins (mandate)"
+  - "Run Medusa against the target for a security audit"
+  - "Is Medusa available and up to date for this engagement?"
+  - "Scan the primary target with Medusa and summarize the findings"
+  - "What did Medusa report on the latest run?"
+  description: Medusa — parallel network service brute-force
+
+network_mitm_bettercap:
+  tool: network_mitm_bettercap
+  questions:
+  - "Bettercap to simulate a MITM attack on the test VLAN (mandate)"
+  - "Run Bettercap against the target for a security audit"
+  - "Is Bettercap available and up to date for this engagement?"
+  - "Scan the primary target with Bettercap and summarize the findings"
+  - "What did Bettercap report on the latest run?"
+  description: Bettercap — MITM, ARP spoofing and sniffing framework
+
+network_mitm_ettercap:
+  tool: network_mitm_ettercap
+  questions:
+  - "Ettercap to test ARP spoofing resistance (mandate)"
+  - "Run Ettercap against the target for a security audit"
+  - "Is Ettercap available and up to date for this engagement?"
+  - "Scan the primary target with Ettercap and summarize the findings"
+  - "What did Ettercap report on the latest run?"
+  description: Ettercap — MITM and ARP spoofing attacks
+
+network_pivot_chisel:
+  tool: network_pivot_chisel
+  questions:
+  - "Chisel to establish a pivot tunnel in the lab (mandate)"
+  - "Run Chisel against the target for a security audit"
+  - "Is Chisel available and up to date for this engagement?"
+  - "Scan the primary target with Chisel and summarize the findings"
+  - "What did Chisel report on the latest run?"
+  description: Chisel — fast TCP/UDP tunnel for pivoting
+
+network_pivot_ligolo:
+  tool: network_pivot_ligolo
+  questions:
+  - "Ligolo-ng to pivot from the jump host (mandate)"
+  - "Run Ligolo-ng against the target for a security audit"
+  - "Is Ligolo-ng available and up to date for this engagement?"
+  - "Scan the primary target with Ligolo-ng and summarize the findings"
+  - "What did Ligolo-ng report on the latest run?"
+  description: Ligolo-ng — reliable network pivoting tunnels
+
+network_dns_tunnel_dnscat2:
+  tool: network_dns_tunnel_dnscat2
+  questions:
+  - "dnscat2 to test DNS tunnel exfiltration (mandate)"
+  - "Run dnscat2 against the target for a security audit"
+  - "Is dnscat2 available and up to date for this engagement?"
+  - "Scan the primary target with dnscat2 and summarize the findings"
+  - "What did dnscat2 report on the latest run?"
+  description: dnscat2 — DNS tunneling for C2/exfiltration
+
+network_dns_tunnel_iodine:
+  tool: network_dns_tunnel_iodine
+  questions:
+  - "iodine to test DNS tunneling (mandate)"
+  - "Run iodine against the target for a security audit"
+  - "Is iodine available and up to date for this engagement?"
+  - "Scan the primary target with iodine and summarize the findings"
+  - "What did iodine report on the latest run?"
+  description: iodine — DNS tunnel relay
+
+network_transfer_netcat:
+  tool: network_transfer_netcat
+  questions:
+  - "Netcat to transfer a file between the lab hosts"
+  - "Run Netcat against the target for a security audit"
+  - "Is Netcat available and up to date for this engagement?"
+  - "Scan the primary target with Netcat and summarize the findings"
+  - "What did Netcat report on the latest run?"
+  description: Netcat — general network utility for file transfer
+
+network_transfer_socat:
+  tool: network_transfer_socat
+  questions:
+  - "Socat to relay a connection in the lab"
+  - "Run Socat against the target for a security audit"
+  - "Is Socat available and up to date for this engagement?"
+  - "Scan the primary target with Socat and summarize the findings"
+  - "What did Socat report on the latest run?"
+  description: Socat — relay and socket utility
+
+wifi_audit_aircrack:
+  tool: wifi_audit_aircrack
+  questions:
+  - "Audit the office WiFi network for weak encryption (mandate required)"
+  - "Run Aircrack-ng against the target for a security audit"
+  - "Is Aircrack-ng available and up to date for this engagement?"
+  - "Scan the primary target with Aircrack-ng and summarize the findings"
+  - "What did Aircrack-ng report on the latest run?"
+  description: Aircrack-ng — WiFi security audit (capture, analysis, cracking)
+
+wifi_rogue_detection:
+  tool: wifi_rogue_detection
+  questions:
+  - "Kismet to detect rogue access points in the corporate area"
+  - "Run Kismet against the target for a security audit"
+  - "Is Kismet available and up to date for this engagement?"
+  - "Scan the primary target with Kismet and summarize the findings"
+  - "What did Kismet report on the latest run?"
+  description: Kismet — wireless network discovery and intrusion detection
+
+wifi_auto_audit:
+  tool: wifi_auto_audit
+  questions:
+  - "Run wifite on the guest network to test WPA2 security"
+  - "Run Wifite against the target for a security audit"
+  - "Is Wifite available and up to date for this engagement?"
+  - "Scan the primary target with Wifite and summarize the findings"
+  - "What did Wifite report on the latest run?"
+  description: Wifite — automated WiFi security auditing
+
+wifi_packet_capture:
+  tool: wifi_packet_capture
+  questions:
+  - "Capture packets on the suspicious VLAN for forensic analysis"
+  - "Run Wireshark against the target for a security audit"
+  - "Is Wireshark available and up to date for this engagement?"
+  - "Scan the primary target with Wireshark and summarize the findings"
+  - "What did Wireshark report on the latest run?"
+  description: Wireshark — packet capture and forensic analysis
+
+wifi_wps_test:
+  tool: wifi_wps_test
+  questions:
+  - "Test the WPS implementation on the office WiFi for vulnerabilities (mandate)"
+  - "Run Reaver against the target for a security audit"
+  - "Is Reaver available and up to date for this engagement?"
+  - "Scan the primary target with Reaver and summarize the findings"
+  - "What did Reaver report on the latest run?"
+  description: Reaver — WPS PIN brute-force vulnerability test
+
+wifi_password_crack:
+  tool: wifi_password_crack
+  questions:
+  - "Test the strength of captured WPA handshakes with hashcat"
+  - "Run Hashcat against the target for a security audit"
+  - "Is Hashcat available and up to date for this engagement?"
+  - "Scan the primary target with Hashcat and summarize the findings"
+  - "What did Hashcat report on the latest run?"
+  description: Hashcat — password strength testing of captured WiFi handshakes
+
+wifi_social_engineering_test:
+  tool: wifi_social_engineering_test
+  questions:
+  - "Run a controlled wifiphisher test on the guest network with mandate"
+  - "Run Wifiphisher against the target for a security audit"
+  - "Is Wifiphisher available and up to date for this engagement?"
+  - "Scan the primary target with Wifiphisher and summarize the findings"
+  - "What did Wifiphisher report on the latest run?"
+  description: Wifiphisher — social engineering WiFi attack simulation
+
+wifi_deauth_mdk4:
+  tool: wifi_deauth_mdk4
+  questions:
+  - "mdk4 to test deauth resistance on the guest network (mandate)"
+  - "Run mdk4 against the target for a security audit"
+  - "Is mdk4 available and up to date for this engagement?"
+  - "Scan the primary target with mdk4 and summarize the findings"
+  - "What did mdk4 report on the latest run?"
+  description: mdk4 — wireless deauth/DoS testing
+
+wifi_evil_twin_fluxion:
+  tool: wifi_evil_twin_fluxion
+  questions:
+  - "Fluxion to simulate an evil twin in the lab (mandate)"
+  - "Run Fluxion against the target for a security audit"
+  - "Is Fluxion available and up to date for this engagement?"
+  - "Scan the primary target with Fluxion and summarize the findings"
+  - "What did Fluxion report on the latest run?"
+  description: Fluxion — automated evil twin attack
+
+wifi_eap_attack_hostapd_wpe:
+  tool: wifi_eap_attack_hostapd_wpe
+  questions:
+  - "hostapd-wpe to test WPA-Enterprise handshake (mandate)"
+  - "Run hostapd-wpe against the target for a security audit"
+  - "Is hostapd-wpe available and up to date for this engagement?"
+  - "Scan the primary target with hostapd-wpe and summarize the findings"
+  - "What did hostapd-wpe report on the latest run?"
+  description: hostapd-wpe — WPA-Enterprise (EAP) attack
+
+code_git_secrets_scan:
+  tool: code_git_secrets_scan
+  questions:
+  - "Scan the backend repo with gitleaks for hardcoded API keys"
+  - "Run Gitleaks against the target for a security audit"
+  - "Is Gitleaks available and up to date for this engagement?"
+  - "Scan the primary target with Gitleaks and summarize the findings"
+  - "What did Gitleaks report on the latest run?"
+  description: Gitleaks — detect hardcoded secrets in git repositories
+
+code_git_history_secrets:
+  tool: code_git_history_secrets
+  questions:
+  - "TruffleHog to check for secrets in the commit history"
+  - "Run TruffleHog against the target for a security audit"
+  - "Is TruffleHog available and up to date for this engagement?"
+  - "Scan the primary target with TruffleHog and summarize the findings"
+  - "What did TruffleHog report on the latest run?"
+  description: TruffleHog — deep secrets detection in git commit history
+
+code_pattern_security_scan:
+  tool: code_pattern_security_scan
+  questions:
+  - "Semgrep scan the service code for injection patterns"
+  - "Run Semgrep against the target for a security audit"
+  - "Is Semgrep available and up to date for this engagement?"
+  - "Scan the primary target with Semgrep and summarize the findings"
+  - "What did Semgrep report on the latest run?"
+  description: Semgrep — code pattern security rule enforcement
+
+code_python_linter_security:
+  tool: code_python_linter_security
+  questions:
+  - "Run bandit on the Python microservice for common security flaws"
+  - "Run Bandit against the target for a security audit"
+  - "Is Bandit available and up to date for this engagement?"
+  - "Scan the primary target with Bandit and summarize the findings"
+  - "What did Bandit report on the latest run?"
+  description: Bandit — Python-specific security linter
+
+code_dependency_image_scan:
+  tool: code_dependency_image_scan
+  questions:
+  - "Trivy scan the payment-service container image for CVEs"
+  - "Run Trivy against the target for a security audit"
+  - "Is Trivy available and up to date for this engagement?"
+  - "Scan the primary target with Trivy and summarize the findings"
+  - "What did Trivy report on the latest run?"
+  description: Trivy — container image and dependency vulnerability scanner
+
+code_dependency_api_check:
+  tool: code_dependency_api_check
+  questions:
+  - "Check the go.mod file against the OSV database for known vulns"
+  - "Run OSV Scanner against the target for a security audit"
+  - "Is OSV Scanner available and up to date for this engagement?"
+  - "Scan the primary target with OSV Scanner and summarize the findings"
+  - "What did OSV Scanner report on the latest run?"
+  description: OSV Scanner — check dependencies against public CVE database
+
+code_supply_chain_audit:
+  tool: code_supply_chain_audit
+  questions:
+  - "Snyk test the Terraform files for misconfigurations"
+  - "Run Snyk against the target for a security audit"
+  - "Is Snyk available and up to date for this engagement?"
+  - "Scan the primary target with Snyk and summarize the findings"
+  - "What did Snyk report on the latest run?"
+  description: Snyk — supply chain security for dependencies and IaC
+
+code_secrets_static_detect:
+  tool: code_secrets_static_detect
+  questions:
+  - "Detect secrets in the project using detect-secrets"
+  - "Run detect-secrets against the target for a security audit"
+  - "Is detect-secrets available and up to date for this engagement?"
+  - "Scan the primary target with detect-secrets and summarize the findings"
+  - "What did detect-secrets report on the latest run?"
+  description: detect-secrets — Yelp's static secrets detection
+
+code_commit_hook_secrets:
+  tool: code_commit_hook_secrets
+  questions:
+  - "Scan the repository with git-secrets for accidental commits"
+  - "Run git-secrets against the target for a security audit"
+  - "Is git-secrets available and up to date for this engagement?"
+  - "Scan the primary target with git-secrets and summarize the findings"
+  - "What did git-secrets report on the latest run?"
+  description: git-secrets — pre-commit secret guard from AWS
+
+code_reverse_ghidra:
+  tool: code_reverse_ghidra
+  questions:
+  - "Ghidra to analyze a suspicious binary"
+  - "Run Ghidra against the target for a security audit"
+  - "Is Ghidra available and up to date for this engagement?"
+  - "Scan the primary target with Ghidra and summarize the findings"
+  - "What did Ghidra report on the latest run?"
+  description: Ghidra — decompiler (the standard for reverse engineering)
+
+code_reverse_radare2:
+  tool: code_reverse_radare2
+  questions:
+  - "radare2 to inspect the malware sample"
+  - "Run radare2 against the target for a security audit"
+  - "Is radare2 available and up to date for this engagement?"
+  - "Scan the primary target with radare2 and summarize the findings"
+  - "What did radare2 report on the latest run?"
+  description: radare2 — reverse engineering framework
+
+config_cis_benchmark_scan:
+  tool: config_cis_benchmark_scan
+  questions:
+  - "Run OpenSCAP on the production nodes to check CIS compliance"
+  - "Run OpenSCAP against the target for a security audit"
+  - "Is OpenSCAP available and up to date for this engagement?"
+  - "Scan the primary target with OpenSCAP and summarize the findings"
+  - "What did OpenSCAP report on the latest run?"
+  description: OpenSCAP — CIS benchmark compliance scanning
+
+config_system_hardening_audit:
+  tool: config_system_hardening_audit
+  questions:
+  - "Lynis audit the new VM for security best practices"
+  - "Run Lynis against the target for a security audit"
+  - "Is Lynis available and up to date for this engagement?"
+  - "Scan the primary target with Lynis and summarize the findings"
+  - "What did Lynis report on the latest run?"
+  description: Lynis — system hardening and security audit
+
+config_tls_cipher_check:
+  tool: config_tls_cipher_check
+  questions:
+  - "sslscan the public domain to check for weak ciphers"
+  - "Run sslscan against the target for a security audit"
+  - "Is sslscan available and up to date for this engagement?"
+  - "Scan the primary target with sslscan and summarize the findings"
+  - "What did sslscan report on the latest run?"
+  description: sslscan — TLS certificate and cipher testing
+
+config_tls_protocol_test:
+  tool: config_tls_protocol_test
+  questions:
+  - "Run testssl on the HTTPS endpoint to check for protocol support"
+  - "Run testssl.sh against the target for a security audit"
+  - "Is testssl.sh available and up to date for this engagement?"
+  - "Scan the primary target with testssl.sh and summarize the findings"
+  - "What did testssl.sh report on the latest run?"
+  description: testssl.sh — comprehensive TLS/SSL protocol analysis
+
+config_host_posture_monitor:
+  tool: config_host_posture_monitor
+  questions:
+  - "Check the Wazuh agent status and security events on the host"
+  - "Run Wazuh against the target for a security audit"
+  - "Is Wazuh available and up to date for this engagement?"
+  - "Scan the primary target with Wazuh and summarize the findings"
+  - "What did Wazuh report on the latest run?"
+  description: Wazuh — agent-based host posture and intrusion monitoring
+
+config_infra_as_code_scan:
+  tool: config_infra_as_code_scan
+  questions:
+  - "Checkov the terraform plan for security misconfigurations"
+  - "Run Checkov against the target for a security audit"
+  - "Is Checkov available and up to date for this engagement?"
+  - "Scan the primary target with Checkov and summarize the findings"
+  - "What did Checkov report on the latest run?"
+  description: Checkov — infrastructure-as-code (Terraform/Helm) security scanning
+
+config_official_cis_scan:
+  tool: config_official_cis_scan
+  questions:
+  - "Run CIS-CAT on the Windows servers for compliance"
+  - "Run CIS-CAT against the target for a security audit"
+  - "Is CIS-CAT available and up to date for this engagement?"
+  - "Scan the primary target with CIS-CAT and summarize the findings"
+  - "What did CIS-CAT report on the latest run?"
+  description: CIS-CAT — official CIS benchmark scanner
+
+email_spf_dkim_dmarc_audit:
+  tool: email_spf_dkim_dmarc_audit
+  questions:
+  - "Check the corporate domain's DMARC and SPF records with checkdmarc"
+  - "Run checkdmarc against the target for a security audit"
+  - "Is checkdmarc available and up to date for this engagement?"
+  - "Scan the primary target with checkdmarc and summarize the findings"
+  - "What did checkdmarc report on the latest run?"
+  description: checkdmarc — SPF/DKIM/DMARC record compliance checker
+
+email_dmarc_diagnostic:
+  tool: email_dmarc_diagnostic
+  questions:
+  - "Diagnose the DMARC policy for our main domain"
+  - "Run dmarctest.org against the target for a security audit"
+  - "Is dmarctest.org available and up to date for this engagement?"
+  - "Scan the primary target with dmarctest.org and summarize the findings"
+  - "What did dmarctest.org report on the latest run?"
+  description: dmarctest.org — comprehensive DMARC policy diagnostic
+
+email_spoofing_test:
+  tool: email_spoofing_test
+  questions:
+  - "Test if an attacker can spoof emails from our domain"
+  - "Run MailSpoof against the target for a security audit"
+  - "Is MailSpoof available and up to date for this engagement?"
+  - "Scan the primary target with MailSpoof and summarize the findings"
+  - "What did MailSpoof report on the latest run?"
+  description: MailSpoof — sender impersonation and spoofing test
+
+email_dns_blacklist_check:
+  tool: email_dns_blacklist_check
+  questions:
+  - "MXToolbox blacklist check for the mail server IP"
+  - "Run MxToolbox against the target for a security audit"
+  - "Is MxToolbox available and up to date for this engagement?"
+  - "Scan the primary target with MxToolbox and summarize the findings"
+  - "What did MxToolbox report on the latest run?"
+  description: MxToolbox — DNS and email blacklist diagnostic
+
+email_phishing_campaign_gophish:
+  tool: email_phishing_campaign_gophish
+  questions:
+  - "GoPhish to run a sanctioned phishing simulation (mandate)"
+  - "Run GoPhish against the target for a security audit"
+  - "Is GoPhish available and up to date for this engagement?"
+  - "Scan the primary target with GoPhish and summarize the findings"
+  - "What did GoPhish report on the latest run?"
+  description: GoPhish — phishing campaign simulator
+
+email_aitm_proxy_evilginx2:
+  tool: email_aitm_proxy_evilginx2
+  questions:
+  - "Evilginx2 to test AiTM detection (mandate)"
+  - "Run Evilginx2 against the target for a security audit"
+  - "Is Evilginx2 available and up to date for this engagement?"
+  - "Scan the primary target with Evilginx2 and summarize the findings"
+  - "What did Evilginx2 report on the latest run?"
+  description: Evilginx2 — AiTM proxy (MFA bypass) simulation
+
+email_social_engineering_set:
+  tool: email_social_engineering_set
+  questions:
+  - "SET to run a sanctioned social engineering test (mandate)"
+  - "Run SET against the target for a security audit"
+  - "Is SET available and up to date for this engagement?"
+  - "Scan the primary target with SET and summarize the findings"
+  - "What did SET report on the latest run?"
+  description: SET (Social Engineering Toolkit) — the standard
+
+dns_passive_subdomain_discovery:
+  tool: dns_passive_subdomain_discovery
+  questions:
+  - "Subfinder to find all subdomains of our main domain"
+  - "Run subfinder against the target for a security audit"
+  - "Is subfinder available and up to date for this engagement?"
+  - "Scan the primary target with subfinder and summarize the findings"
+  - "What did subfinder report on the latest run?"
+  description: subfinder — passive subdomain discovery from public sources
+
+dns_bruteforce_subdomain_scan:
+  tool: dns_bruteforce_subdomain_scan
+  questions:
+  - "Run Amass to discover hidden subdomains and external footprints"
+  - "Run Amass against the target for a security audit"
+  - "Is Amass available and up to date for this engagement?"
+  - "Scan the primary target with Amass and summarize the findings"
+  - "What did Amass report on the latest run?"
+  description: Amass — comprehensive DNS enumeration and subdomain brute-force
+
+dns_zone_transfer_test:
+  tool: dns_zone_transfer_test
+  questions:
+  - "dnsrecon to check for DNS zone transfer misconfigurations"
+  - "Run dnsrecon against the target for a security audit"
+  - "Is dnsrecon available and up to date for this engagement?"
+  - "Scan the primary target with dnsrecon and summarize the findings"
+  - "What did dnsrecon report on the latest run?"
+  description: dnsrecon — DNS zone transfer and misconfiguration detection
+
+dns_enumeration_classic:
+  tool: dns_enumeration_classic
+  questions:
+  - "dnsenum to audit the DNS records of our domain"
+  - "Run dnsenum against the target for a security audit"
+  - "Is dnsenum available and up to date for this engagement?"
+  - "Scan the primary target with dnsenum and summarize the findings"
+  - "What did dnsenum report on the latest run?"
+  description: dnsenum — classic DNS enumeration and record audit
+
+dns_mass_enumeration:
+  tool: dns_mass_enumeration
+  questions:
+  - "MassDNS to scan for wildcard DNS records"
+  - "Run MassDNS against the target for a security audit"
+  - "Is MassDNS available and up to date for this engagement?"
+  - "Scan the primary target with MassDNS and summarize the findings"
+  - "What did MassDNS report on the latest run?"
+  description: MassDNS — large-scale DNS enumeration for wildcard records
+
+dns_email_osint_theharvester:
+  tool: dns_email_osint_theharvester
+  questions:
+  - "theHarvester to gather emails and subdomains of the target"
+  - "Run theHarvester against the target for a security audit"
+  - "Is theHarvester available and up to date for this engagement?"
+  - "Scan the primary target with theHarvester and summarize the findings"
+  - "What did theHarvester report on the latest run?"
+  description: theHarvester — OSINT email/domain/subdomain collection
+
+dns_recon_framework_reconng:
+  tool: dns_recon_framework_reconng
+  questions:
+  - "Recon-ng to run a recon module on the domain"
+  - "Run Recon-ng against the target for a security audit"
+  - "Is Recon-ng available and up to date for this engagement?"
+  - "Scan the primary target with Recon-ng and summarize the findings"
+  - "What did Recon-ng report on the latest run?"
+  description: Recon-ng — reconnaissance framework
+
+dns_osint_spiderfoot:
+  tool: dns_osint_spiderfoot
+  questions:
+  - "SpiderFoot to correlate the target's public footprint"
+  - "Run SpiderFoot against the target for a security audit"
+  - "Is SpiderFoot available and up to date for this engagement?"
+  - "Scan the primary target with SpiderFoot and summarize the findings"
+  - "What did SpiderFoot report on the latest run?"
+  description: SpiderFoot — OSINT correlation and footprinting
+
+dns_subdomain_sublist3r:
+  tool: dns_subdomain_sublist3r
+  questions:
+  - "Sublist3r to list subdomains of the corporate domain"
+  - "Run Sublist3r against the target for a security audit"
+  - "Is Sublist3r available and up to date for this engagement?"
+  - "Scan the primary target with Sublist3r and summarize the findings"
+  - "What did Sublist3r report on the latest run?"
+  description: Sublist3r — subdomain enumeration
+
+dns_probe_dnsx:
+  tool: dns_probe_dnsx
+  questions:
+  - "dnsx to resolve and filter live subdomains"
+  - "Run dnsx against the target for a security audit"
+  - "Is dnsx available and up to date for this engagement?"
+  - "Scan the primary target with dnsx and summarize the findings"
+  - "What did dnsx report on the latest run?"
+  description: dnsx — fast DNS probing (ProjectDiscovery)
+
+cloud_cis_audit:
+  tool: cloud_cis_audit
+  questions:
+  - "Prowler to check AWS account compliance with CIS benchmarks"
+  - "Run Prowler against the target for a security audit"
+  - "Is Prowler available and up to date for this engagement?"
+  - "Scan the primary target with Prowler and summarize the findings"
+  - "What did Prowler report on the latest run?"
+  description: Prowler — cloud CIS benchmark auditor (AWS/Azure/GCP)
+
+cloud_multicloud_security_audit:
+  tool: cloud_multicloud_security_audit
+  questions:
+  - "Run Scout Suite on our Azure tenant for security posture"
+  - "Run Scout Suite against the target for a security audit"
+  - "Is Scout Suite available and up to date for this engagement?"
+  - "Scan the primary target with Scout Suite and summarize the findings"
+  - "What did Scout Suite report on the latest run?"
+  description: Scout Suite — multi-cloud security posture assessment
+
+cloud_exposure_detection:
+  tool: cloud_exposure_detection
+  questions:
+  - "CloudSploit to detect open S3 buckets and exposed databases"
+  - "Run CloudSploit against the target for a security audit"
+  - "Is CloudSploit available and up to date for this engagement?"
+  - "Scan the primary target with CloudSploit and summarize the findings"
+  - "What did CloudSploit report on the latest run?"
+  description: CloudSploit — cloud resource exposure and risk detection
+
+cloud_aws_penetration_test:
+  tool: cloud_aws_penetration_test
+  questions:
+  - "Pacu security assessment of AWS environment (mandate required)"
+  - "Run Pacu against the target for a security audit"
+  - "Is Pacu available and up to date for this engagement?"
+  - "Scan the primary target with Pacu and summarize the findings"
+  - "What did Pacu report on the latest run?"
+  description: Pacu — AWS penetration testing framework
+
+cloud_enumeration_cloudfox:
+  tool: cloud_enumeration_cloudfox
+  questions:
+  - "CloudFox to enumerate the AWS attack surface"
+  - "Run CloudFox against the target for a security audit"
+  - "Is CloudFox available and up to date for this engagement?"
+  - "Scan the primary target with CloudFox and summarize the findings"
+  - "What did CloudFox report on the latest run?"
+  description: CloudFox — cloud enumeration (AWS/Azure/GCP)
+
+cloud_post_exploitation_zeus:
+  tool: cloud_post_exploitation_zeus
+  questions:
+  - "Zeus to test AWS post-exploitation in the lab (mandate)"
+  - "Run Zeus against the target for a security audit"
+  - "Is Zeus available and up to date for this engagement?"
+  - "Scan the primary target with Zeus and summarize the findings"
+  - "What did Zeus report on the latest run?"
+  description: Zeus — post-exploitation for AWS
+
+ad_attack_path_mapping:
+  tool: ad_attack_path_mapping
+  questions:
+  - "BloodHound to map AD attack paths and identify privilege escalation"
+  - "Run BloodHound against the target for a security audit"
+  - "Is BloodHound available and up to date for this engagement?"
+  - "Scan the primary target with BloodHound and summarize the findings"
+  - "What did BloodHound report on the latest run?"
+  description: BloodHound — Active Directory attack path visualization
+
+ad_access_audit:
+  tool: ad_access_audit
+  questions:
+  - "CME to check for SMB vulnerabilities and weak credentials"
+  - "Run CrackMapExec against the target for a security audit"
+  - "Is CrackMapExec available and up to date for this engagement?"
+  - "Scan the primary target with CrackMapExec and summarize the findings"
+  - "What did CrackMapExec report on the latest run?"
+  description: CrackMapExec — AD access and SMB vulnerability assessment
+
+ad_toolkit_kerberos_smb:
+  tool: ad_toolkit_kerberos_smb
+  questions:
+  - "Impacket to audit Kerberos and SMB security"
+  - "Run Impacket against the target for a security audit"
+  - "Is Impacket available and up to date for this engagement?"
+  - "Scan the primary target with Impacket and summarize the findings"
+  - "What did Impacket report on the latest run?"
+  description: Impacket — AD security toolkit (Kerberos, SMB)
+
+ad_protocol_weakness_test:
+  tool: ad_protocol_weakness_test
+  questions:
+  - "Responder to test for weak protocol vulnerabilities"
+  - "Run Responder against the target for a security audit"
+  - "Is Responder available and up to date for this engagement?"
+  - "Scan the primary target with Responder and summarize the findings"
+  - "What did Responder report on the latest run?"
+  description: Responder — LLMNR/NBT-NS poisoning vulnerability test
+
+ad_ldap_inspection:
+  tool: ad_ldap_inspection
+  questions:
+  - "ldapsearch to audit Active Directory structure"
+  - "Run ldapsearch against the target for a security audit"
+  - "Is ldapsearch available and up to date for this engagement?"
+  - "Scan the primary target with ldapsearch and summarize the findings"
+  - "What did ldapsearch report on the latest run?"
+  description: ldapsearch — LDAP directory inspection
+
+ad_credential_bruteforce_test:
+  tool: ad_credential_bruteforce_test
+  questions:
+  - "Kerbrute to test for weak AD credentials"
+  - "Run Kerbrute against the target for a security audit"
+  - "Is Kerbrute available and up to date for this engagement?"
+  - "Scan the primary target with Kerbrute and summarize the findings"
+  - "What did Kerbrute report on the latest run?"
+  description: Kerbrute — AD account credential testing
+
+identity_credential_dump_mimikatz:
+  tool: identity_credential_dump_mimikatz
+  questions:
+  - "Mimikatz to test credential dumping on the test host (mandate)"
+  - "Run Mimikatz against the target for a security audit"
+  - "Is Mimikatz available and up to date for this engagement?"
+  - "Scan the primary target with Mimikatz and summarize the findings"
+  - "What did Mimikatz report on the latest run?"
+  description: Mimikatz — Windows credential dumping
+
+identity_winrm_shell:
+  tool: identity_winrm_shell
+  questions:
+  - "Evil-WinRM to get a shell on the Windows host (mandate)"
+  - "Run Evil-WinRM against the target for a security audit"
+  - "Is Evil-WinRM available and up to date for this engagement?"
+  - "Scan the primary target with Evil-WinRM and summarize the findings"
+  - "What did Evil-WinRM report on the latest run?"
+  description: Evil-WinRM — interactive WinRM shell
+
+identity_c2_sliver:
+  tool: identity_c2_sliver
+  questions:
+  - "Sliver to validate C2 detection in the lab (mandate)"
+  - "Run Sliver against the target for a security audit"
+  - "Is Sliver available and up to date for this engagement?"
+  - "Scan the primary target with Sliver and summarize the findings"
+  - "What did Sliver report on the latest run?"
+  description: Sliver — open-source C2 framework (GOAD-ready)
+
+identity_c2_framework:
+  tool: identity_c2_framework
+  questions:
+  - "Deploy a C2 framework to test detection (mandate)"
+  - "Run Covenant / Mythic / Havoc against the target for a security audit"
+  - "Is Covenant / Mythic / Havoc available and up to date for this engagement?"
+  - "Scan the primary target with Covenant / Mythic / Havoc and summarize the findings"
+  - "What did Covenant / Mythic / Havoc report on the latest run?"
+  description: Covenant / Mythic / Havoc — C2 frameworks
+
+identity_post_exploitation_empire:
+  tool: identity_post_exploitation_empire
+  questions:
+  - "Empire to simulate PowerShell post-exploitation (mandate)"
+  - "Run Empire against the target for a security audit"
+  - "Is Empire available and up to date for this engagement?"
+  - "Scan the primary target with Empire and summarize the findings"
+  - "What did Empire report on the latest run?"
+  description: Empire (+ Starkiller) — PowerShell post-exploitation
+
+identity_powershell_offensive:
+  tool: identity_powershell_offensive
+  questions:
+  - "PowerSploit to test the PowerShell logging (mandate)"
+  - "Run Nishang / PowerSploit against the target for a security audit"
+  - "Is Nishang / PowerSploit available and up to date for this engagement?"
+  - "Scan the primary target with Nishang / PowerSploit and summarize the findings"
+  - "What did Nishang / PowerSploit report on the latest run?"
+  description: Nishang / PowerSploit — offensive PowerShell scripts
+
+identity_reverse_shell_pwncat:
+  tool: identity_reverse_shell_pwncat
+  questions:
+  - "pwncat to establish a stable shell in the lab (mandate)"
+  - "Run pwncat against the target for a security audit"
+  - "Is pwncat available and up to date for this engagement?"
+  - "Scan the primary target with pwncat and summarize the findings"
+  - "What did pwncat report on the latest run?"
+  description: pwncat — stabilized reverse shell + post-exploitation
+
+identity_post_exploitation_koadic:
+  tool: identity_post_exploitation_koadic
+  questions:
+  - "Koadic to test Windows post-exploitation detection (mandate)"
+  - "Run Koadic against the target for a security audit"
+  - "Is Koadic available and up to date for this engagement?"
+  - "Scan the primary target with Koadic and summarize the findings"
+  - "What did Koadic report on the latest run?"
+  description: Koadic — Windows post-exploitation (JScript/VBS)
+
+identity_kerberos_rubeus:
+  tool: identity_kerberos_rubeus
+  questions:
+  - "Rubeus to test Kerberoast on the AD lab (mandate)"
+  - "Run Rubeus against the target for a security audit"
+  - "Is Rubeus available and up to date for this engagement?"
+  - "Scan the primary target with Rubeus and summarize the findings"
+  - "What did Rubeus report on the latest run?"
+  description: Rubeus — Kerberos attacks (Kerberoast, AS-REP roasting)
+
+identity_adcs_certipy:
+  tool: identity_adcs_certipy
+  questions:
+  - "Certipy to audit ADCS for escalation (mandate)"
+  - "Run Certipy against the target for a security audit"
+  - "Is Certipy available and up to date for this engagement?"
+  - "Scan the primary target with Certipy and summarize the findings"
+  - "What did Certipy report on the latest run?"
+  description: Certipy — ADCS (certificate) escalation
+
+identity_netexec:
+  tool: identity_netexec
+  questions:
+  - "NetExec to audit SMB and AD access (mandate)"
+  - "Run NetExec against the target for a security audit"
+  - "Is NetExec available and up to date for this engagement?"
+  - "Scan the primary target with NetExec and summarize the findings"
+  - "What did NetExec report on the latest run?"
+  description: NetExec (nxc) — the successor of CrackMapExec
+
+identity_smb_enumeration_enum4linux:
+  tool: identity_smb_enumeration_enum4linux
+  questions:
+  - "enum4linux to enumerate SMB shares anonymously"
+  - "Run enum4linux against the target for a security audit"
+  - "Is enum4linux available and up to date for this engagement?"
+  - "Scan the primary target with enum4linux and summarize the findings"
+  - "What did enum4linux report on the latest run?"
+  description: enum4linux — SMB/AD enumeration
+
+container_runtime_intrusion_detect:
+  tool: container_runtime_intrusion_detect
+  questions:
+  - "Check Falco for unusual container activity in production"
+  - "Run Falco against the target for a security audit"
+  - "Is Falco available and up to date for this engagement?"
+  - "Scan the primary target with Falco and summarize the findings"
+  - "What did Falco report on the latest run?"
+  description: Falco — runtime container intrusion and anomaly detection
+
+k8s_vulnerability_scan:
+  tool: k8s_vulnerability_scan
+  questions:
+  - "Kube-hunter to scan the Kubernetes cluster for known vulnerabilities"
+  - "Run kube-hunter against the target for a security audit"
+  - "Is kube-hunter available and up to date for this engagement?"
+  - "Scan the primary target with kube-hunter and summarize the findings"
+  - "What did kube-hunter report on the latest run?"
+  description: kube-hunter — Kubernetes cluster vulnerability scanner
+
+k8s_cis_benchmark_audit:
+  tool: k8s_cis_benchmark_audit
+  questions:
+  - "kube-bench to audit Kubernetes CIS compliance"
+  - "Run kube-bench against the target for a security audit"
+  - "Is kube-bench available and up to date for this engagement?"
+  - "Scan the primary target with kube-bench and summarize the findings"
+  - "What did kube-bench report on the latest run?"
+  description: kube-bench — CIS Kubernetes benchmark auditor
+
+container_image_cve_scan:
+  tool: container_image_cve_scan
+  questions:
+  - "Grype to scan payment-service image for CVE vulnerabilities"
+  - "Run Grype against the target for a security audit"
+  - "Is Grype available and up to date for this engagement?"
+  - "Scan the primary target with Grype and summarize the findings"
+  - "What did Grype report on the latest run?"
+  description: Grype — container image vulnerability scanning
+
+container_dockerfile_best_practice:
+  tool: container_dockerfile_best_practice
+  questions:
+  - "Dockle to check the Dockerfile for security best practices"
+  - "Run Dockle against the target for a security audit"
+  - "Is Dockle available and up to date for this engagement?"
+  - "Scan the primary target with Dockle and summarize the findings"
+  - "What did Dockle report on the latest run?"
+  description: Dockle — Dockerfile and container best practices
+
+container_dockerfile_lint:
+  tool: container_dockerfile_lint
+  questions:
+  - "Hadolint to lint the Dockerfile for security and performance"
+  - "Run Hadolint against the target for a security audit"
+  - "Is Hadolint available and up to date for this engagement?"
+  - "Scan the primary target with Hadolint and summarize the findings"
+  - "What did Hadolint report on the latest run?"
+  description: Hadolint — Dockerfile linter for security and style
+
+container_k8s_pentest_peirates:
+  tool: container_k8s_pentest_peirates
+  questions:
+  - "Peirates to audit the cluster for privilege escalation (mandate)"
+  - "Run Peirates against the target for a security audit"
+  - "Is Peirates available and up to date for this engagement?"
+  - "Scan the primary target with Peirates and summarize the findings"
+  - "What did Peirates report on the latest run?"
+  description: Peirates — offensive Kubernetes penetration testing
+
+mobile_app_static_analysis:
+  tool: mobile_app_static_analysis
+  questions:
+  - "MobSF to analyze the Android APK for security flaws"
+  - "Run MobSF against the target for a security audit"
+  - "Is MobSF available and up to date for this engagement?"
+  - "Scan the primary target with MobSF and summarize the findings"
+  - "What did MobSF report on the latest run?"
+  description: MobSF — static and dynamic analysis for Android and iOS
+
+mobile_apk_disassemble:
+  tool: mobile_apk_disassemble
+  questions:
+  - "apktool to decode the Android app for manual review"
+  - "Run Apktool against the target for a security audit"
+  - "Is Apktool available and up to date for this engagement?"
+  - "Scan the primary target with Apktool and summarize the findings"
+  - "What did Apktool report on the latest run?"
+  description: Apktool — APK disassembly for manual review
+
+mobile_apk_decompile:
+  tool: mobile_apk_decompile
+  questions:
+  - "JADX to decompile the Android app and search for hardcoded secrets"
+  - "Run JADX against the target for a security audit"
+  - "Is JADX available and up to date for this engagement?"
+  - "Scan the primary target with JADX and summarize the findings"
+  - "What did JADX report on the latest run?"
+  description: JADX — Android APK decompiler for source inspection
+
+api_spec_security_audit:
+  tool: api_spec_security_audit
+  questions:
+  - "42Crunch to audit the API specification for security issues"
+  - "Run 42Crunch against the target for a security audit"
+  - "Is 42Crunch available and up to date for this engagement?"
+  - "Scan the primary target with 42Crunch and summarize the findings"
+  - "What did 42Crunch report on the latest run?"
+  description: 42Crunch — API specification security audit
+
+api_penetration_test:
+  tool: api_penetration_test
+  questions:
+  - "Run APIsec to test the payment API for business logic flaws"
+  - "Run APIsec against the target for a security audit"
+  - "Is APIsec available and up to date for this engagement?"
+  - "Scan the primary target with APIsec and summarize the findings"
+  - "What did APIsec report on the latest run?"
+  description: APIsec — API penetration testing for logic flaws
+
+api_owasp_top10_review:
+  tool: api_owasp_top10_review
+  questions:
+  - "Review the API with the OWASP API Security Top 10 checklist"
+  - "Run OWASP API Security against the target for a security audit"
+  - "Is OWASP API Security available and up to date for this engagement?"
+  - "Scan the primary target with OWASP API Security and summarize the findings"
+  - "What did OWASP API Security report on the latest run?"
+  description: OWASP API Security — manual checklist review
+
+knowledge_cve_lookup:
+  tool: knowledge_cve_lookup
+  questions:
+  - "Look up CVE-2024-1234 in NVD for severity and description"
+  - "Run NVD against the target for a security audit"
+  - "Is NVD available and up to date for this engagement?"
+  - "Scan the primary target with NVD and summarize the findings"
+  - "What did NVD report on the latest run?"
+  description: NVD — CVE database public API
+
+knowledge_exploit_prediction:
+  tool: knowledge_exploit_prediction
+  questions:
+  - "Get EPSS for the critical CVE affecting the payment service"
+  - "Run EPSS against the target for a security audit"
+  - "Is EPSS available and up to date for this engagement?"
+  - "Scan the primary target with EPSS and summarize the findings"
+  - "What did EPSS report on the latest run?"
+  description: EPSS — exploit prediction score (FIRST)
+
+knowledge_exploit_public_db:
+  tool: knowledge_exploit_public_db
+  questions:
+  - "Check Exploit-DB for public exploits of CVE-2025-5678"
+  - "Run Exploit-DB against the target for a security audit"
+  - "Is Exploit-DB available and up to date for this engagement?"
+  - "Scan the primary target with Exploit-DB and summarize the findings"
+  - "What did Exploit-DB report on the latest run?"
+  description: Exploit-DB — public exploit database
+
+knowledge_exploit_offline_search:
+  tool: knowledge_exploit_offline_search
+  questions:
+  - "SearchSploit for known exploits of the specific vulnerability"
+  - "Run SearchSploit against the target for a security audit"
+  - "Is SearchSploit available and up to date for this engagement?"
+  - "Scan the primary target with SearchSploit and summarize the findings"
+  - "What did SearchSploit report on the latest run?"
+  description: SearchSploit — offline exploit search
+
+knowledge_internet_exposure_shodan:
+  tool: knowledge_internet_exposure_shodan
+  questions:
+  - "Shodan to find if the corporate IP is exposed on non-standard ports"
+  - "Run Shodan against the target for a security audit"
+  - "Is Shodan available and up to date for this engagement?"
+  - "Scan the primary target with Shodan and summarize the findings"
+  - "What did Shodan report on the latest run?"
+  description: Shodan — Internet exposure discovery
+
+knowledge_internet_inventory_censys:
+  tool: knowledge_internet_inventory_censys
+  questions:
+  - "Censys to map the corporate public surface"
+  - "Run Censys against the target for a security audit"
+  - "Is Censys available and up to date for this engagement?"
+  - "Scan the primary target with Censys and summarize the findings"
+  - "What did Censys report on the latest run?"
+  description: Censys — Internet asset inventory
+
+knowledge_domain_surface_whois:
+  tool: knowledge_domain_surface_whois
+  questions:
+  - "WHOIS lookup to audit domain ownership and expiration"
+  - "Run WHOIS/DNS against the target for a security audit"
+  - "Is WHOIS/DNS available and up to date for this engagement?"
+  - "Scan the primary target with WHOIS/DNS and summarize the findings"
+  - "What did WHOIS/DNS report on the latest run?"
+  description: WHOIS/DNS — domain ownership and surface discovery
+
+knowledge_offensive_exploit_framework:
+  tool: knowledge_offensive_exploit_framework
+  questions:
+  - "Metasploit to test the vulnerability with known exploit modules (mandate)"
+  - "Run Metasploit against the target for a security audit"
+  - "Is Metasploit available and up to date for this engagement?"
+  - "Scan the primary target with Metasploit and summarize the findings"
+  - "What did Metasploit report on the latest run?"
+  description: Metasploit — exploit framework for controlled testing
