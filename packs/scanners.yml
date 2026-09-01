@@ -85,6 +85,76 @@ families:
         questions:
           - "Gobuster the main site for backup and config files"
 
+      - name: web_command_injection_commix
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "Commix — automated OS command injection testing"
+        questions:
+          - "Test the web endpoints for command injection with commix (mandate required)"
+          - "Commix to detect OS command injection on the file upload API (mandate)"
+
+      - name: web_xss_advanced
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "XSStrike — advanced XSS payload detection"
+        questions:
+          - "Run XSStrike to detect XSS in the search parameter (mandate required)"
+
+      - name: web_template_injection_tplmap
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "Tplmap — Server-Side Template Injection (SSTI) detection"
+        questions:
+          - "Tplmap to detect SSTI on the profile page (mandate required)"
+
+      - name: web_sql_injection_gui
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "jSQL Injection — graphical SQL injection testing"
+        questions:
+          - "jSQL Injection to test the login form for SQLi (mandate)"
+
+      - name: web_param_discovery_arjun
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "Arjun — hidden HTTP parameter discovery"
+        questions:
+          - "Arjun to discover hidden parameters on the payment API (mandate)"
+
+      - name: web_fuzzing_wfuzz
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "Wfuzz — web fuzzing for parameters and payloads"
+        questions:
+          - "Wfuzz to fuzz the API for injection points (mandate)"
+
+      - name: web_api_discovery_kiterunner
+        type: local
+        docker: true
+        description: "Kiterunner — API endpoint / route discovery"
+        questions:
+          - "Kiterunner to discover hidden API routes on the service"
+
+      - name: web_historical_urls
+        type: local
+        docker: true
+        description: "waybackurls / gau — historical URLs and endpoints from archives"
+        questions:
+          - "gau to gather historical URLs of the target for recon"
+
+      - name: web_http_probe_httpx
+        type: local
+        docker: true
+        description: "httpx — fast HTTP probing (ProjectDiscovery)"
+        questions:
+          - "httpx to probe the discovered hosts for live endpoints"
+
   network:
     description: "Network and infrastructure scanners — CVEs, ports, hosts"
     port: NetworkScannerPort
@@ -138,6 +208,101 @@ families:
         description: "Netdiscover — ARP-based local network device discovery"
         questions:
           - "Netdiscover the local subnet to find unauthorized devices"
+
+      - name: network_login_bruteforce
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "Hydra (THC) — online password brute-force against SSH, HTTP(S), RDP, FTP"
+        questions:
+          - "Hydra to test SSH brute-force resistance on the bastion (mandate required)"
+          - "Check the web login for weak credentials with hydra (mandate required)"
+          - "Brute-force test the FTP service account strength with hydra (mandate)"
+
+      - name: network_password_crack_john
+        type: local
+        docker: true
+        description: "John the Ripper — offline password cracking"
+        questions:
+          - "John the Ripper to test the strength of dumped hashes"
+
+      - name: network_fast_bruteforce_ncrack
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "Ncrack — high-speed network authentication brute-force"
+        questions:
+          - "Ncrack to test SSH/RDP credential strength (mandate required)"
+
+      - name: network_parallel_bruteforce_medusa
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "Medusa — parallel network service brute-force"
+        questions:
+          - "Medusa to audit the FTP/Telnet service for weak logins (mandate)"
+
+      - name: network_mitm_bettercap
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "Bettercap — MITM, ARP spoofing and sniffing framework"
+        questions:
+          - "Bettercap to simulate a MITM attack on the test VLAN (mandate)"
+
+      - name: network_mitm_ettercap
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "Ettercap — MITM and ARP spoofing attacks"
+        questions:
+          - "Ettercap to test ARP spoofing resistance (mandate)"
+
+      - name: network_pivot_chisel
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "Chisel — fast TCP/UDP tunnel for pivoting"
+        questions:
+          - "Chisel to establish a pivot tunnel in the lab (mandate)"
+
+      - name: network_pivot_ligolo
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "Ligolo-ng — reliable network pivoting tunnels"
+        questions:
+          - "Ligolo-ng to pivot from the jump host (mandate)"
+
+      - name: network_dns_tunnel_dnscat2
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "dnscat2 — DNS tunneling for C2/exfiltration"
+        questions:
+          - "dnscat2 to test DNS tunnel exfiltration (mandate)"
+
+      - name: network_dns_tunnel_iodine
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "iodine — DNS tunnel relay"
+        questions:
+          - "iodine to test DNS tunneling (mandate)"
+
+      - name: network_transfer_netcat
+        type: local
+        docker: true
+        description: "Netcat — general network utility for file transfer"
+        questions:
+          - "Netcat to transfer a file between the lab hosts"
+
+      - name: network_transfer_socat
+        type: local
+        docker: true
+        description: "Socat — relay and socket utility"
+        questions:
+          - "Socat to relay a connection in the lab"
 
   wifi:
     description: "Wireless network security — SSID, encryption, clients"
@@ -196,6 +361,30 @@ families:
         description: "Wifiphisher — social engineering WiFi attack simulation"
         questions:
           - "Run a controlled wifiphisher test on the guest network with mandate"
+
+      - name: wifi_deauth_mdk4
+        type: offensive
+        docker: false
+        requires_mandate: true
+        description: "mdk4 — wireless deauth/DoS testing"
+        questions:
+          - "mdk4 to test deauth resistance on the guest network (mandate)"
+
+      - name: wifi_evil_twin_fluxion
+        type: offensive
+        docker: false
+        requires_mandate: true
+        description: "Fluxion — automated evil twin attack"
+        questions:
+          - "Fluxion to simulate an evil twin in the lab (mandate)"
+
+      - name: wifi_eap_attack_hostapd_wpe
+        type: offensive
+        docker: false
+        requires_mandate: true
+        description: "hostapd-wpe — WPA-Enterprise (EAP) attack"
+        questions:
+          - "hostapd-wpe to test WPA-Enterprise handshake (mandate)"
 
   secrets_code:
     description: "Secrets and code scanning — tokens, keys, code patterns"
@@ -263,6 +452,20 @@ families:
         description: "git-secrets — pre-commit secret guard from AWS"
         questions:
           - "Scan the repository with git-secrets for accidental commits"
+
+      - name: code_reverse_ghidra
+        type: local
+        docker: true
+        description: "Ghidra — decompiler (the standard for reverse engineering)"
+        questions:
+          - "Ghidra to analyze a suspicious binary"
+
+      - name: code_reverse_radare2
+        type: local
+        docker: true
+        description: "radare2 — reverse engineering framework"
+        questions:
+          - "radare2 to inspect the malware sample"
 
   config:
     description: "Configuration and identity — CIS benchmarks, TLS, hardening"
@@ -349,6 +552,30 @@ families:
         questions:
           - "MXToolbox blacklist check for the mail server IP"
 
+      - name: email_phishing_campaign_gophish
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "GoPhish — phishing campaign simulator"
+        questions:
+          - "GoPhish to run a sanctioned phishing simulation (mandate)"
+
+      - name: email_aitm_proxy_evilginx2
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "Evilginx2 — AiTM proxy (MFA bypass) simulation"
+        questions:
+          - "Evilginx2 to test AiTM detection (mandate)"
+
+      - name: email_social_engineering_set
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "SET (Social Engineering Toolkit) — the standard"
+        questions:
+          - "SET to run a sanctioned social engineering test (mandate)"
+
   dns:
     description: "DNS enumeration — forgotten subdomains and exposed records"
     port: DnsScannerPort
@@ -388,6 +615,41 @@ families:
         questions:
           - "MassDNS to scan for wildcard DNS records"
 
+      - name: dns_email_osint_theharvester
+        type: local
+        docker: true
+        description: "theHarvester — OSINT email/domain/subdomain collection"
+        questions:
+          - "theHarvester to gather emails and subdomains of the target"
+
+      - name: dns_recon_framework_reconng
+        type: local
+        docker: true
+        description: "Recon-ng — reconnaissance framework"
+        questions:
+          - "Recon-ng to run a recon module on the domain"
+
+      - name: dns_osint_spiderfoot
+        type: local
+        docker: true
+        description: "SpiderFoot — OSINT correlation and footprinting"
+        questions:
+          - "SpiderFoot to correlate the target's public footprint"
+
+      - name: dns_subdomain_sublist3r
+        type: local
+        docker: true
+        description: "Sublist3r — subdomain enumeration"
+        questions:
+          - "Sublist3r to list subdomains of the corporate domain"
+
+      - name: dns_probe_dnsx
+        type: local
+        docker: true
+        description: "dnsx — fast DNS probing (ProjectDiscovery)"
+        questions:
+          - "dnsx to resolve and filter live subdomains"
+
   cloud:
     description: "Cloud security — AWS, Azure, GCP misconfigurations"
     port: CloudScannerPort
@@ -420,6 +682,21 @@ families:
         description: "Pacu — AWS penetration testing framework"
         questions:
           - "Pacu security assessment of AWS environment (mandate required)"
+
+      - name: cloud_enumeration_cloudfox
+        type: local
+        docker: true
+        description: "CloudFox — cloud enumeration (AWS/Azure/GCP)"
+        questions:
+          - "CloudFox to enumerate the AWS attack surface"
+
+      - name: cloud_post_exploitation_zeus
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "Zeus — post-exploitation for AWS"
+        questions:
+          - "Zeus to test AWS post-exploitation in the lab (mandate)"
 
   identity:
     description: "Active Directory and identity security"
@@ -471,6 +748,101 @@ families:
         questions:
           - "Kerbrute to test for weak AD credentials"
 
+      - name: identity_credential_dump_mimikatz
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "Mimikatz — Windows credential dumping"
+        questions:
+          - "Mimikatz to test credential dumping on the test host (mandate)"
+
+      - name: identity_winrm_shell
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "Evil-WinRM — interactive WinRM shell"
+        questions:
+          - "Evil-WinRM to get a shell on the Windows host (mandate)"
+
+      - name: identity_c2_sliver
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "Sliver — open-source C2 framework (GOAD-ready)"
+        questions:
+          - "Sliver to validate C2 detection in the lab (mandate)"
+
+      - name: identity_c2_framework
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "Covenant / Mythic / Havoc — C2 frameworks"
+        questions:
+          - "Deploy a C2 framework to test detection (mandate)"
+
+      - name: identity_post_exploitation_empire
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "Empire (+ Starkiller) — PowerShell post-exploitation"
+        questions:
+          - "Empire to simulate PowerShell post-exploitation (mandate)"
+
+      - name: identity_powershell_offensive
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "Nishang / PowerSploit — offensive PowerShell scripts"
+        questions:
+          - "PowerSploit to test the PowerShell logging (mandate)"
+
+      - name: identity_reverse_shell_pwncat
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "pwncat — stabilized reverse shell + post-exploitation"
+        questions:
+          - "pwncat to establish a stable shell in the lab (mandate)"
+
+      - name: identity_post_exploitation_koadic
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "Koadic — Windows post-exploitation (JScript/VBS)"
+        questions:
+          - "Koadic to test Windows post-exploitation detection (mandate)"
+
+      - name: identity_kerberos_rubeus
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "Rubeus — Kerberos attacks (Kerberoast, AS-REP roasting)"
+        questions:
+          - "Rubeus to test Kerberoast on the AD lab (mandate)"
+
+      - name: identity_adcs_certipy
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "Certipy — ADCS (certificate) escalation"
+        questions:
+          - "Certipy to audit ADCS for escalation (mandate)"
+
+      - name: identity_netexec
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "NetExec (nxc) — the successor of CrackMapExec"
+        questions:
+          - "NetExec to audit SMB and AD access (mandate)"
+
+      - name: identity_smb_enumeration_enum4linux
+        type: local
+        docker: true
+        description: "enum4linux — SMB/AD enumeration"
+        questions:
+          - "enum4linux to enumerate SMB shares anonymously"
+
   containers:
     description: "Container and Kubernetes security"
     port: ContainerScannerPort
@@ -516,6 +888,14 @@ families:
         description: "Hadolint — Dockerfile linter for security and style"
         questions:
           - "Hadolint to lint the Dockerfile for security and performance"
+
+      - name: container_k8s_pentest_peirates
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "Peirates — offensive Kubernetes penetration testing"
+        questions:
+          - "Peirates to audit the cluster for privilege escalation (mandate)"
 
   mobile:
     description: "Mobile application security — Android and iOS"
