@@ -16,3 +16,4 @@ class EmailRecord:
     def __post_init__(self) -> None:
         if not self.domain.strip():
             raise ValueError("email domain cannot be empty")
+        object.__setattr__(self, "domain", self.domain.strip())

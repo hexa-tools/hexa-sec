@@ -20,3 +20,15 @@ def test_image_ref_rejects_empty_repository() -> None:
 def test_image_ref_rejects_empty_tag() -> None:
     with pytest.raises(ValueError):
         ImageRef(repository="acme/payment", tag="")
+
+
+def test_image_ref_digest() -> None:
+    image = ImageRef(repository="acme/payment", tag="1.4.2", digest="sha256:abc")
+    assert image.qualified == "acme/payment:1.4.2@sha256:abc"
+
+
+def test_image_ref_normalizes_fields() -> None:
+    image = ImageRef("  acme/payment  ", "  1.4.2  ", "  sha256:abc  ")
+    assert image.repository == "acme/payment"
+    assert image.tag == "1.4.2"
+    assert image.digest == "sha256:abc"

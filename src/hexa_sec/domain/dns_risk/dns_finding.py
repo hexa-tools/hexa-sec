@@ -20,6 +20,7 @@ class DnsFinding:
     def __post_init__(self) -> None:
         if not self.domain.strip():
             raise ValueError("dns finding domain cannot be empty")
+        object.__setattr__(self, "domain", self.domain.strip())
 
     def has_zone_transfer(self) -> bool:
         return self.zone_transfer
