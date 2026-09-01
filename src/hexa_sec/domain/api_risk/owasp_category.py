@@ -18,3 +18,18 @@ class OwaspApiCategory(Enum):
     SECURITY_MISCONFIGURATION = "api8"
     IMPROPER_INVENTORY_MANAGEMENT = "api9"
     UNSAFE_CONSUMPTION_OF_APIS = "api10"
+
+    @classmethod
+    def normalize(cls, raw: str) -> OwaspApiCategory:
+        """Map ``"API1"``/``"api05"``/``"10"`` to a category; unknown -> ValueError.
+
+        Never invents a category: an unrecognized value is rejected at
+        normalization time.
+        """
+        code = raw.strip().lower()
+        if code.startswith("api"):
+            code = code[3:]
+        code = code.lstrip("0") or "0"
+        if code.isdigit() and 1 <= int(code) <= 10:
+            return cls(f"api{int(code)}")
+        raise ValueError(f"unknown OWASP API category: {raw}")

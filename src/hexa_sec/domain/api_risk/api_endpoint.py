@@ -24,6 +24,7 @@ class ApiEndpoint:
         if not self.path.strip():
             raise ValueError("api path cannot be empty")
         object.__setattr__(self, "method", method)
+        object.__setattr__(self, "path", self.path.strip())
 
     def requires_auth(self) -> bool:
         return self.auth_required

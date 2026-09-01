@@ -16,3 +16,13 @@ class ApiFinding:
     endpoint: ApiEndpoint
     category: OwaspApiCategory
     severity: Severity = Severity.MEDIUM
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.endpoint, ApiEndpoint):
+            raise ValueError("api finding endpoint must be an ApiEndpoint")
+        if not isinstance(self.category, OwaspApiCategory):
+            raise ValueError("api finding category must be an OwaspApiCategory")
+        if not isinstance(self.severity, Severity):
+            raise ValueError("api finding severity must be a Severity")
+        if not self.endpoint.requires_auth() and self.severity.rank < Severity.HIGH.rank:
+            object.__setattr__(self, "severity", Severity.HIGH)

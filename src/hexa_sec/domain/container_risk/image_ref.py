@@ -14,16 +14,16 @@ class ImageRef:
     """A container image repository and tag."""
 
     repository: str
-    tag: str
+    tag: str = ""
     digest: str = ""
 
     def __post_init__(self) -> None:
         if not self.repository.strip():
             raise ValueError("image repository cannot be empty")
-        if not self.tag.strip():
-            raise ValueError("image tag cannot be empty")
-        object.__setattr__(self, "repository", self.repository.strip())
-        object.__setattr__(self, "tag", self.tag.strip())
+        repository = self.repository.strip()
+        tag = self.tag.strip() or "latest"
+        object.__setattr__(self, "repository", repository)
+        object.__setattr__(self, "tag", tag)
         object.__setattr__(self, "digest", self.digest.strip())
 
     @property
