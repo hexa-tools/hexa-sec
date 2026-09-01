@@ -1,0 +1,9 @@
+[package]
+name = "hexa-sec-parse"
+version = "0.1.0"
+edition = "2021"
+description = "Fast report parsing (JSON/SARIF/XML/APK) behind driven ports — serde, never a layer of its own."
+
+[lib]
+name = "hexa_sec_parse"
+crate-type = ["cdylib", "rlib"]

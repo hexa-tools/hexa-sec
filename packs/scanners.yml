@@ -1,0 +1,629 @@
+# hexa-sec/packs/scanners.yml
+# Inventory of all security scanners — each entry maps to an adapter.
+# Family = the port (e.g., WebScannerPort, NetworkScannerPort).
+# Type: local (dockerized), saas (API), offensive (mandate required).
+#
+# The rule: 1 adapter per tool — they are interchangeable.
+
+families:
+  web:
+    description: "Web application scanners — OWASP Top 10, SQLi, XSS, auth"
+    port: WebScannerPort
+    tools:
+      - name: web_vuln_scan_burp
+        type: local
+        docker: true
+        description: "Burp Suite — comprehensive web app vulnerability scanning"
+        questions:
+          - "Scan the payment app with Burp for OWASP Top 10 vulnerabilities"
+          - "Run an active scan on the admin portal and export findings"
+
+      - name: web_vuln_scan_zap
+        type: local
+        docker: true
+        description: "OWASP ZAP — open-source web vulnerability scanner"
+        questions:
+          - "Run an automated ZAP scan against the staging environment"
+          - "Check for SQLi and XSS with ZAP on the checkout service"
+
+      - name: web_cve_templates_nuclei
+        type: local
+        docker: true
+        description: "Nuclei — vulnerability templates scanner (ProjectDiscovery)"
+        questions:
+          - "Run nuclei against the public API endpoints with critical severity only"
+          - "Scan the new microservice for known CVEs using nuclei templates"
+
+      - name: web_wordpress_audit
+        type: local
+        docker: true
+        description: "WPScan — WordPress vulnerability and plugin scanner"
+        questions:
+          - "Check our WordPress site for vulnerable plugins and themes"
+          - "WPScan the marketing site and report any high-risk issues"
+
+      - name: web_server_misconfig_nikto
+        type: local
+        docker: true
+        description: "Nikto — web server misconfiguration and outdated files scanner"
+        questions:
+          - "Nikto scan the webserver for default files and outdated versions"
+
+      - name: web_deep_scan_arachni
+        type: local
+        docker: true
+        description: "Arachni — full-featured web application security scanner"
+        questions:
+          - "Run Arachni on the new API gateway for deep security analysis"
+
+      - name: web_sql_injection_test
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "sqlmap — automated SQL injection exploitation testing"
+        questions:
+          - "Test the login endpoint for SQL injection with sqlmap (mandate required)"
+
+      - name: web_dir_bruteforce
+        type: local
+        docker: true
+        description: "dirsearch — hidden directory and file discovery"
+        questions:
+          - "Find hidden admin paths on the main domain using dirsearch"
+
+      - name: web_fuzzing_ffuf
+        type: local
+        docker: true
+        description: "ffuf — fast fuzzing for directories, parameters, and subdomains"
+        questions:
+          - "Fuzz for subdomains on the corporate domain with ffuf"
+
+      - name: web_dns_bruteforce_gobuster
+        type: local
+        docker: true
+        description: "Gobuster — brute-force directories and DNS subdomains"
+        questions:
+          - "Gobuster the main site for backup and config files"
+
+  network:
+    description: "Network and infrastructure scanners — CVEs, ports, hosts"
+    port: NetworkScannerPort
+    tools:
+      - name: network_enterprise_cve_scan
+        type: saas
+        docker: false
+        description: "Nessus (Tenable) — enterprise vulnerability scanner"
+        questions:
+          - "Run a Nessus scan of the production subnet and correlate findings"
+          - "Get the Nessus report for the DMZ hosts and prioritize fixes"
+
+      - name: network_opensource_cve_scan
+        type: local
+        docker: true
+        description: "OpenVAS — open-source vulnerability scanner (Nessus alternative)"
+        questions:
+          - "OpenVAS scan the internal network for missing patches"
+
+      - name: network_cloud_cve_scan
+        type: saas
+        docker: false
+        description: "Qualys — cloud-based vulnerability scanner"
+        questions:
+          - "Trigger a Qualys scan on the external perimeter and fetch results"
+
+      - name: network_port_discovery
+        type: local
+        docker: true
+        description: "Nmap — port and service discovery"
+        questions:
+          - "Nmap scan the staging environment for open ports and versions"
+
+      - name: network_fast_port_scan
+        type: local
+        docker: true
+        description: "Masscan — ultra-fast port scanner for large IP ranges"
+        questions:
+          - "Masscan the whole corporate IP range to build an asset inventory"
+
+      - name: network_internet_scan
+        type: local
+        docker: true
+        description: "Zmap — internet-wide scanning for open services"
+        questions:
+          - "Zmap the public IP ranges for unexpected open services"
+
+      - name: network_local_discovery_arp
+        type: local
+        docker: true
+        description: "Netdiscover — ARP-based local network device discovery"
+        questions:
+          - "Netdiscover the local subnet to find unauthorized devices"
+
+  wifi:
+    description: "Wireless network security — SSID, encryption, clients"
+    port: WifiScannerPort
+    tools:
+      - name: wifi_audit_aircrack
+        type: offensive
+        docker: false
+        requires_mandate: true
+        description: "Aircrack-ng — WiFi security audit (capture, analysis, cracking)"
+        questions:
+          - "Audit the office WiFi network for weak encryption (mandate required)"
+
+      - name: wifi_rogue_detection
+        type: offensive
+        docker: false
+        requires_mandate: true
+        description: "Kismet — wireless network discovery and intrusion detection"
+        questions:
+          - "Kismet to detect rogue access points in the corporate area"
+
+      - name: wifi_auto_audit
+        type: offensive
+        docker: false
+        requires_mandate: true
+        description: "Wifite — automated WiFi security auditing"
+        questions:
+          - "Run wifite on the guest network to test WPA2 security"
+
+      - name: wifi_packet_capture
+        type: local
+        docker: false
+        description: "Wireshark — packet capture and forensic analysis"
+        questions:
+          - "Capture packets on the suspicious VLAN for forensic analysis"
+
+      - name: wifi_wps_test
+        type: offensive
+        docker: false
+        requires_mandate: true
+        description: "Reaver — WPS PIN brute-force vulnerability test"
+        questions:
+          - "Test the WPS implementation on the office WiFi for vulnerabilities (mandate)"
+
+      - name: wifi_password_crack
+        type: local
+        docker: false
+        description: "Hashcat — password strength testing of captured WiFi handshakes"
+        questions:
+          - "Test the strength of captured WPA handshakes with hashcat"
+
+      - name: wifi_social_engineering_test
+        type: offensive
+        docker: false
+        requires_mandate: true
+        description: "Wifiphisher — social engineering WiFi attack simulation"
+        questions:
+          - "Run a controlled wifiphisher test on the guest network with mandate"
+
+  secrets_code:
+    description: "Secrets and code scanning — tokens, keys, code patterns"
+    port: CodeScannerPort
+    tools:
+      - name: code_git_secrets_scan
+        type: local
+        docker: true
+        description: "Gitleaks — detect hardcoded secrets in git repositories"
+        questions:
+          - "Scan the backend repo with gitleaks for hardcoded API keys"
+
+      - name: code_git_history_secrets
+        type: local
+        docker: true
+        description: "TruffleHog — deep secrets detection in git commit history"
+        questions:
+          - "TruffleHog to check for secrets in the commit history"
+
+      - name: code_pattern_security_scan
+        type: local
+        docker: true
+        description: "Semgrep — code pattern security rule enforcement"
+        questions:
+          - "Semgrep scan the service code for injection patterns"
+
+      - name: code_python_linter_security
+        type: local
+        docker: true
+        description: "Bandit — Python-specific security linter"
+        questions:
+          - "Run bandit on the Python microservice for common security flaws"
+
+      - name: code_dependency_image_scan
+        type: local
+        docker: true
+        description: "Trivy — container image and dependency vulnerability scanner"
+        questions:
+          - "Trivy scan the payment-service container image for CVEs"
+
+      - name: code_dependency_api_check
+        type: saas
+        docker: false
+        description: "OSV Scanner — check dependencies against public CVE database"
+        questions:
+          - "Check the go.mod file against the OSV database for known vulns"
+
+      - name: code_supply_chain_audit
+        type: saas
+        docker: false
+        description: "Snyk — supply chain security for dependencies and IaC"
+        questions:
+          - "Snyk test the Terraform files for misconfigurations"
+
+      - name: code_secrets_static_detect
+        type: local
+        docker: true
+        description: "detect-secrets — Yelp's static secrets detection"
+        questions:
+          - "Detect secrets in the project using detect-secrets"
+
+      - name: code_commit_hook_secrets
+        type: local
+        docker: true
+        description: "git-secrets — pre-commit secret guard from AWS"
+        questions:
+          - "Scan the repository with git-secrets for accidental commits"
+
+  config:
+    description: "Configuration and identity — CIS benchmarks, TLS, hardening"
+    port: ConfigScannerPort
+    tools:
+      - name: config_cis_benchmark_scan
+        type: local
+        docker: true
+        description: "OpenSCAP — CIS benchmark compliance scanning"
+        questions:
+          - "Run OpenSCAP on the production nodes to check CIS compliance"
+
+      - name: config_system_hardening_audit
+        type: local
+        docker: true
+        description: "Lynis — system hardening and security audit"
+        questions:
+          - "Lynis audit the new VM for security best practices"
+
+      - name: config_tls_cipher_check
+        type: local
+        docker: true
+        description: "sslscan — TLS certificate and cipher testing"
+        questions:
+          - "sslscan the public domain to check for weak ciphers"
+
+      - name: config_tls_protocol_test
+        type: local
+        docker: true
+        description: "testssl.sh — comprehensive TLS/SSL protocol analysis"
+        questions:
+          - "Run testssl on the HTTPS endpoint to check for protocol support"
+
+      - name: config_host_posture_monitor
+        type: local
+        docker: true
+        description: "Wazuh — agent-based host posture and intrusion monitoring"
+        questions:
+          - "Check the Wazuh agent status and security events on the host"
+
+      - name: config_infra_as_code_scan
+        type: local
+        docker: true
+        description: "Checkov — infrastructure-as-code (Terraform/Helm) security scanning"
+        questions:
+          - "Checkov the terraform plan for security misconfigurations"
+
+      - name: config_official_cis_scan
+        type: local
+        docker: false
+        description: "CIS-CAT — official CIS benchmark scanner"
+        questions:
+          - "Run CIS-CAT on the Windows servers for compliance"
+
+  email:
+    description: "Email spoofing and compliance — SPF, DKIM, DMARC"
+    port: EmailScannerPort
+    tools:
+      - name: email_spf_dkim_dmarc_audit
+        type: saas
+        docker: false
+        description: "checkdmarc — SPF/DKIM/DMARC record compliance checker"
+        questions:
+          - "Check the corporate domain's DMARC and SPF records with checkdmarc"
+
+      - name: email_dmarc_diagnostic
+        type: saas
+        docker: false
+        description: "dmarctest.org — comprehensive DMARC policy diagnostic"
+        questions:
+          - "Diagnose the DMARC policy for our main domain"
+
+      - name: email_spoofing_test
+        type: saas
+        docker: false
+        description: "MailSpoof — sender impersonation and spoofing test"
+        questions:
+          - "Test if an attacker can spoof emails from our domain"
+
+      - name: email_dns_blacklist_check
+        type: saas
+        docker: false
+        description: "MxToolbox — DNS and email blacklist diagnostic"
+        questions:
+          - "MXToolbox blacklist check for the mail server IP"
+
+  dns:
+    description: "DNS enumeration — forgotten subdomains and exposed records"
+    port: DnsScannerPort
+    tools:
+      - name: dns_passive_subdomain_discovery
+        type: local
+        docker: true
+        description: "subfinder — passive subdomain discovery from public sources"
+        questions:
+          - "Subfinder to find all subdomains of our main domain"
+
+      - name: dns_bruteforce_subdomain_scan
+        type: local
+        docker: true
+        description: "Amass — comprehensive DNS enumeration and subdomain brute-force"
+        questions:
+          - "Run Amass to discover hidden subdomains and external footprints"
+
+      - name: dns_zone_transfer_test
+        type: local
+        docker: true
+        description: "dnsrecon — DNS zone transfer and misconfiguration detection"
+        questions:
+          - "dnsrecon to check for DNS zone transfer misconfigurations"
+
+      - name: dns_enumeration_classic
+        type: local
+        docker: true
+        description: "dnsenum — classic DNS enumeration and record audit"
+        questions:
+          - "dnsenum to audit the DNS records of our domain"
+
+      - name: dns_mass_enumeration
+        type: local
+        docker: true
+        description: "MassDNS — large-scale DNS enumeration for wildcard records"
+        questions:
+          - "MassDNS to scan for wildcard DNS records"
+
+  cloud:
+    description: "Cloud security — AWS, Azure, GCP misconfigurations"
+    port: CloudScannerPort
+    tools:
+      - name: cloud_cis_audit
+        type: local
+        docker: true
+        description: "Prowler — cloud CIS benchmark auditor (AWS/Azure/GCP)"
+        questions:
+          - "Prowler to check AWS account compliance with CIS benchmarks"
+
+      - name: cloud_multicloud_security_audit
+        type: local
+        docker: true
+        description: "Scout Suite — multi-cloud security posture assessment"
+        questions:
+          - "Run Scout Suite on our Azure tenant for security posture"
+
+      - name: cloud_exposure_detection
+        type: saas
+        docker: false
+        description: "CloudSploit — cloud resource exposure and risk detection"
+        questions:
+          - "CloudSploit to detect open S3 buckets and exposed databases"
+
+      - name: cloud_aws_penetration_test
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "Pacu — AWS penetration testing framework"
+        questions:
+          - "Pacu security assessment of AWS environment (mandate required)"
+
+  identity:
+    description: "Active Directory and identity security"
+    port: IdentityScannerPort
+    tools:
+      - name: ad_attack_path_mapping
+        type: local
+        docker: true
+        description: "BloodHound — Active Directory attack path visualization"
+        questions:
+          - "BloodHound to map AD attack paths and identify privilege escalation"
+
+      - name: ad_access_audit
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "CrackMapExec — AD access and SMB vulnerability assessment"
+        questions:
+          - "CME to check for SMB vulnerabilities and weak credentials"
+
+      - name: ad_toolkit_kerberos_smb
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "Impacket — AD security toolkit (Kerberos, SMB)"
+        questions:
+          - "Impacket to audit Kerberos and SMB security"
+
+      - name: ad_protocol_weakness_test
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "Responder — LLMNR/NBT-NS poisoning vulnerability test"
+        questions:
+          - "Responder to test for weak protocol vulnerabilities"
+
+      - name: ad_ldap_inspection
+        type: local
+        docker: true
+        description: "ldapsearch — LDAP directory inspection"
+        questions:
+          - "ldapsearch to audit Active Directory structure"
+
+      - name: ad_credential_bruteforce_test
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "Kerbrute — AD account credential testing"
+        questions:
+          - "Kerbrute to test for weak AD credentials"
+
+  containers:
+    description: "Container and Kubernetes security"
+    port: ContainerScannerPort
+    tools:
+      - name: container_runtime_intrusion_detect
+        type: local
+        docker: false
+        description: "Falco — runtime container intrusion and anomaly detection"
+        questions:
+          - "Check Falco for unusual container activity in production"
+
+      - name: k8s_vulnerability_scan
+        type: local
+        docker: true
+        description: "kube-hunter — Kubernetes cluster vulnerability scanner"
+        questions:
+          - "Kube-hunter to scan the Kubernetes cluster for known vulnerabilities"
+
+      - name: k8s_cis_benchmark_audit
+        type: local
+        docker: true
+        description: "kube-bench — CIS Kubernetes benchmark auditor"
+        questions:
+          - "kube-bench to audit Kubernetes CIS compliance"
+
+      - name: container_image_cve_scan
+        type: local
+        docker: true
+        description: "Grype — container image vulnerability scanning"
+        questions:
+          - "Grype to scan payment-service image for CVE vulnerabilities"
+
+      - name: container_dockerfile_best_practice
+        type: local
+        docker: true
+        description: "Dockle — Dockerfile and container best practices"
+        questions:
+          - "Dockle to check the Dockerfile for security best practices"
+
+      - name: container_dockerfile_lint
+        type: local
+        docker: true
+        description: "Hadolint — Dockerfile linter for security and style"
+        questions:
+          - "Hadolint to lint the Dockerfile for security and performance"
+
+  mobile:
+    description: "Mobile application security — Android and iOS"
+    port: MobileScannerPort
+    tools:
+      - name: mobile_app_static_analysis
+        type: local
+        docker: true
+        description: "MobSF — static and dynamic analysis for Android and iOS"
+        questions:
+          - "MobSF to analyze the Android APK for security flaws"
+
+      - name: mobile_apk_disassemble
+        type: local
+        docker: true
+        description: "Apktool — APK disassembly for manual review"
+        questions:
+          - "apktool to decode the Android app for manual review"
+
+      - name: mobile_apk_decompile
+        type: local
+        docker: true
+        description: "JADX — Android APK decompiler for source inspection"
+        questions:
+          - "JADX to decompile the Android app and search for hardcoded secrets"
+
+  api:
+    description: "API security — OWASP API Top 10"
+    port: ApiScannerPort
+    tools:
+      - name: api_spec_security_audit
+        type: saas
+        docker: false
+        description: "42Crunch — API specification security audit"
+        questions:
+          - "42Crunch to audit the API specification for security issues"
+
+      - name: api_penetration_test
+        type: saas
+        docker: false
+        description: "APIsec — API penetration testing for logic flaws"
+        questions:
+          - "Run APIsec to test the payment API for business logic flaws"
+
+      - name: api_owasp_top10_review
+        type: local
+        docker: false
+        description: "OWASP API Security — manual checklist review"
+        questions:
+          - "Review the API with the OWASP API Security Top 10 checklist"
+
+  knowledge:
+    description: "Knowledge sources — CVE, EPSS, exploits, exposure"
+    port: KnowledgePort
+    tools:
+      - name: knowledge_cve_lookup
+        type: saas
+        docker: false
+        description: "NVD — CVE database public API"
+        questions:
+          - "Look up CVE-2024-1234 in NVD for severity and description"
+
+      - name: knowledge_exploit_prediction
+        type: saas
+        docker: false
+        description: "EPSS — exploit prediction score (FIRST)"
+        questions:
+          - "Get EPSS for the critical CVE affecting the payment service"
+
+      - name: knowledge_exploit_public_db
+        type: saas
+        docker: false
+        description: "Exploit-DB — public exploit database"
+        questions:
+          - "Check Exploit-DB for public exploits of CVE-2025-5678"
+
+      - name: knowledge_exploit_offline_search
+        type: local
+        docker: true
+        description: "SearchSploit — offline exploit search"
+        questions:
+          - "SearchSploit for known exploits of the specific vulnerability"
+
+      - name: knowledge_internet_exposure_shodan
+        type: saas
+        docker: false
+        description: "Shodan — Internet exposure discovery"
+        questions:
+          - "Shodan to find if the corporate IP is exposed on non-standard ports"
+
+      - name: knowledge_internet_inventory_censys
+        type: saas
+        docker: false
+        description: "Censys — Internet asset inventory"
+        questions:
+          - "Censys to map the corporate public surface"
+
+      - name: knowledge_domain_surface_whois
+        type: saas
+        docker: false
+        description: "WHOIS/DNS — domain ownership and surface discovery"
+        questions:
+          - "WHOIS lookup to audit domain ownership and expiration"
+
+      - name: knowledge_offensive_exploit_framework
+        type: offensive
+        docker: true
+        requires_mandate: true
+        description: "Metasploit — exploit framework for controlled testing"
+        questions:
+          - "Metasploit to test the vulnerability with known exploit modules (mandate)"
