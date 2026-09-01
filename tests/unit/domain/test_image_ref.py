@@ -19,7 +19,12 @@ def test_image_ref_rejects_empty_repository() -> None:
 
 def test_image_ref_rejects_empty_tag() -> None:
     with pytest.raises(ValueError):
-        ImageRef(repository="acme/payment", tag="")
+        ImageRef(repository="", tag="")
+
+
+def test_image_ref_defaults_tag_to_latest() -> None:
+    assert ImageRef(repository="acme/payment").qualified == "acme/payment:latest"
+    assert ImageRef(repository="acme/payment", tag="   ").qualified == "acme/payment:latest"
 
 
 def test_image_ref_digest() -> None:

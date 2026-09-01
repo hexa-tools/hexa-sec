@@ -31,3 +31,7 @@ def test_api_endpoint_rejects_unsupported_method() -> None:
 def test_api_endpoint_rejects_empty_path() -> None:
     with pytest.raises(ValueError):
         ApiEndpoint(method="GET", path="")
+
+
+def test_api_endpoint_normalizes_path() -> None:
+    assert ApiEndpoint(method="GET", path="  /v1/payments  ").path == "/v1/payments"
