@@ -1,25 +1,32 @@
-"""NetworkFinding — an exposed service or banner (context: network_risk)."""
+"""NetworkFinding — an exposed port/service (context: network_risk, SEC-11).
+
+An adapter (nmap/masscan/...) translates a scanner result into a NetworkFinding:
+the asset, the anonymous ``Port``, the detected ``application`` (the port's
+service), its ``Banner`` and its Internet ``Exposure``. The value objects
+``Port`` and ``Application`` come from ``asset_inventory`` (context 5, DRY).
+"""
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 
+from hexa_sec.domain.asset_inventory.port import Application, Port
+from hexa_sec.domain.network_risk.banner import Banner
+from hexa_sec.domain.network_risk.exposure import Exposure
+
 
 @dataclass(frozen=True)
 class NetworkFinding:
-    """A network-level exposure."""
+    """A single network-level exposure on an asset."""
 
-    host: str
-    port: int
-    service: str
-    exposed_to_internet: bool = False
+    asset: str
+    port: Port
+    service: Application
+    banner: Banner
+    exposure: Exposure
 
     def __post_init__(self) -> None:
-        if not self.host:
-            raise ValueError("network finding host cannot be empty")
-        if not self.service:
-            raise ValueError("network finding service cannot be empty")
-        if self.port < 1:
-            raise ValueError("network finding port must be between 1 and 65535")
-        if self.port > 65535:
-            raise ValueError("network finding port must be between 1 and 65535")
+        if not self.asset or not self.asset.strip():
+            raise ValueError("network finding asset cannot be empty")
+        if not isinstance(self.exposure, Exposure):
+            raise ValueError("network finding exposure must be an Exposure")
