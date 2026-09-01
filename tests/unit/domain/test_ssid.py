@@ -32,3 +32,7 @@ def test_bssid_value() -> None:
 def test_bssid_rejects_empty() -> None:
     with pytest.raises(ValueError):
         Bssid("")
+
+
+def test_bssid_normalizes_value() -> None:
+    assert Bssid("  AA:BB:CC:DD:EE:FF  ").value == "AA:BB:CC:DD:EE:FF"
