@@ -22,6 +22,12 @@ class MobileFinding:
             raise ValueError("mobile package cannot be empty")
         if not self.issue.strip():
             raise ValueError("mobile issue cannot be empty")
+        if not isinstance(self.platform, MobilePlatform):
+            raise ValueError("mobile finding platform must be a MobilePlatform")
+        if self.secret_type is not None and not isinstance(self.secret_type, SecretType):
+            raise ValueError("mobile finding secret_type must be a SecretType")
+        object.__setattr__(self, "package", self.package.strip())
+        object.__setattr__(self, "issue", self.issue.strip())
 
     def embeds_secret(self) -> bool:
         return self.secret_type is not None
