@@ -8,12 +8,17 @@ comparant deux exécutions à entrées identiques.
 
 from __future__ import annotations
 
+from datetime import date
+
 from hexa_sec.domain.api_risk.api_endpoint import ApiEndpoint
 from hexa_sec.domain.api_risk.api_finding import ApiFinding
 from hexa_sec.domain.api_risk.owasp_category import OwaspApiCategory
+from hexa_sec.domain.asset.asset import Asset
+from hexa_sec.domain.asset.asset_type import AssetType
 from hexa_sec.domain.cloud_risk.cloud_finding import CloudFinding
 from hexa_sec.domain.cloud_risk.cloud_provider import CloudProvider
 from hexa_sec.domain.cloud_risk.cloud_resource import CloudResource
+from hexa_sec.domain.consent.mandate import Mandate, MandateId, MandateLevel
 from hexa_sec.domain.container_risk.container_finding import ContainerFinding
 from hexa_sec.domain.container_risk.image_ref import ImageRef
 from hexa_sec.domain.dns_risk.dns_finding import DnsFinding
@@ -23,6 +28,10 @@ from hexa_sec.domain.email_risk.email_finding import EmailFinding
 from hexa_sec.domain.email_risk.email_record import EmailRecord
 from hexa_sec.domain.mobile_risk.mobile_finding import MobileFinding
 from hexa_sec.domain.mobile_risk.mobile_platform import MobilePlatform
+from hexa_sec.domain.scan.scan import Scan, ScanId
+from hexa_sec.domain.scan.scan_depth import ScanDepth
+from hexa_sec.domain.scan.scan_parameters import ScanParameters
+from hexa_sec.domain.scan.scan_status import ScanStatus
 from hexa_sec.domain.secret_risk.secret_type import SecretType
 from hexa_sec.domain.wifi_risk.ssid import Ssid
 from hexa_sec.domain.wifi_risk.wifi_finding import WifiFinding
@@ -78,3 +87,37 @@ def test_api_predicate_is_deterministic() -> None:
     )
     assert finding.endpoint.requires_auth() is True
     assert finding.endpoint.requires_auth() is True
+
+
+def _scan() -> Scan:
+    mandate = Mandate(
+        mandate_id=MandateId("mnd_0001"),
+        client="Acme Corp",
+        targets=("10.0.0.1",),
+        start_date=date(2026, 1, 1),
+        end_date=date(2026, 12, 31),
+        level=MandateLevel.STANDARD,
+        signature="REF-2026-0001",
+    )
+    return Scan.create(
+        ScanId("scan_0001"),
+        mandate,
+        (Asset(name="10.0.0.1", type=AssetType.HOST),),
+        ("nessus",),
+        ScanParameters(depth=ScanDepth.COMPLETE),
+        as_of=date(2026, 6, 1),
+    )
+
+
+def test_scan_creation_is_deterministic() -> None:
+    # catégorie 7 — des entrées identiques produisent toujours le même scan
+    assert _scan() == _scan()
+
+
+def test_scan_predicate_is_reproducible() -> None:
+    # catégorie 7 — la machine à états (with_status) est reproductible
+    first = _scan().with_status(ScanStatus.RUNNING)
+    second = _scan().with_status(ScanStatus.RUNNING)
+    assert first == second
+    assert first.status is ScanStatus.RUNNING
+    assert first.with_status(ScanStatus.DONE) == second.with_status(ScanStatus.DONE)
