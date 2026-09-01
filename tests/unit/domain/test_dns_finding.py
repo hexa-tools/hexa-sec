@@ -35,6 +35,19 @@ def test_dns_finding_not_exposed() -> None:
     assert finding.exposed() is False
 
 
+def test_dns_finding_unresolved_subdomain_not_exposed() -> None:
+    finding = DnsFinding(
+        domain="acme.example",
+        subdomains=(Subdomain(name="admin.acme.example", resolved=False),),
+    )
+    assert finding.exposed() is False
+    assert len(finding.subdomains) == 1
+
+
 def test_dns_finding_rejects_empty_domain() -> None:
     with pytest.raises(ValueError):
         DnsFinding(domain="")
+
+
+def test_dns_finding_normalizes_domain() -> None:
+    assert DnsFinding(domain="  acme.example  ").domain == "acme.example"

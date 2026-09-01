@@ -15,3 +15,12 @@ class RecordType(Enum):
     TXT = "txt"
     NS = "ns"
     SOA = "soa"
+
+    @classmethod
+    def normalize(cls, raw: str) -> RecordType:
+        """Map a raw label to a ``RecordType``; unknown values are rejected."""
+        cleaned = raw.strip().lower().replace(" ", "_").replace("-", "_")
+        try:
+            return cls(cleaned)
+        except ValueError as error:
+            raise ValueError(f"unknown record type: {raw}") from error
