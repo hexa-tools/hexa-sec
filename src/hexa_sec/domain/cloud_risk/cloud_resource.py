@@ -17,10 +17,14 @@ class CloudResource:
     public: bool = False
 
     def __post_init__(self) -> None:
+        if not isinstance(self.provider, CloudProvider):
+            raise ValueError("cloud resource provider must be a CloudProvider")
         if not self.resource_id.strip():
             raise ValueError("cloud resource id cannot be empty")
         if not self.resource_type.strip():
             raise ValueError("cloud resource type cannot be empty")
+        object.__setattr__(self, "resource_id", self.resource_id.strip())
+        object.__setattr__(self, "resource_type", self.resource_type.strip())
 
     def is_public(self) -> bool:
         return self.public
