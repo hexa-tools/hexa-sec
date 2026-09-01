@@ -21,3 +21,9 @@ class EmailFinding:
 
     def spoofable(self) -> bool:
         return self.dmarc in (DmarcStatus.NONE, DmarcStatus.MISSING)
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.record, EmailRecord):
+            raise ValueError("email finding record must be an EmailRecord")
+        if not isinstance(self.dmarc, DmarcStatus):
+            raise ValueError("email finding dmarc must be a DmarcStatus")
