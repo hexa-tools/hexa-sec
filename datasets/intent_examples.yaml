@@ -1,0 +1,49 @@
+scan_asset:
+  tool: scan_asset
+  questions:
+  - "Scan the host 10.0.0.1 for vulnerabilities"
+  - "Run a full network scan on 10.0.0.5 and list every open service"
+  - "Check the staging web app for SQL injection and XSS"
+  - "Scan the acme/web-app repository for leaked secrets"
+  - "Audit the apache-gateway container image for known CVEs"
+  description: Launch the configured scanners on an asset (mandate required) and normalize their findings into the domain
+
+correlate:
+  tool: correlate
+  questions:
+  - "Cross the findings from the last scan to find attack chains"
+  - "Are there exposed ports, SQL injection and a committed token on the same host?"
+  - "Find the weakest link that ties all the critical findings together"
+  - "Turn the raw scanner noise into a prioritized set of real exposures"
+  - "Which findings together would let an attacker reach the ERP system?"
+  description: Deterministically cross findings into attack chains, exposure, noise-reduction, temporal, compliance and business-impact correlations
+
+score_report:
+  tool: score_report
+  questions:
+  - "Score the report and tell me what to fix first"
+  - "Rank these findings by severity, exploitability and business impact"
+  - "Give me a 0-100 risk score for this scan and what drives it"
+  - "What are the top five things I should solve this week?"
+  - "Order the fixes by effort versus impact"
+  description: Score and order the fix-first priorities (severity x exploitability x exposure x impact x effort)
+
+manage_mandate:
+  tool: manage_mandate
+  questions:
+  - "Register the signed mandate for the ACME engagement"
+  - "Add a mandate covering 10.0.0.0/24 for the next 90 days"
+  - "Record the client authorization for an offensive security test"
+  - "Is the 10.0.0.1 scan authorized? Show me the current mandate"
+  - "Extend the mandate for the checkout application through end of year"
+  description: Record the signed legal mandate (law Godfrain) that authorizes every scan
+
+generate_report:
+  tool: generate_report
+  questions:
+  - "Generate the client-ready security report for scan 12873"
+  - "Produce the fix-first report with the global score and top 5"
+  - "Export the report for this scan as Markdown for the client"
+  - "Give me the full audit report with correlations and compliance breakdown"
+  - "Write the summary report with the top priority fixes first"
+  description: Produce the 5-section client report (score, top-5 fixes, correlations, technical detail, compliance)

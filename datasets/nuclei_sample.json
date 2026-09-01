@@ -1,0 +1,22 @@
+[
+  {
+    "template-id": "CVE-2024-0001",
+    "info": {
+      "name": "Example Panel RCE",
+      "severity": "critical",
+      "tags": ["cve", "rce"]
+    },
+    "host": "https://app.acme.example",
+    "matcher-name": "rce-panel",
+    "extracted-results": ["uid=0(root)"]
+  },
+  {
+    "template-id": "ssl-expired",
+    "info": {
+      "name": "TLS Certificate Expired",
+      "severity": "medium"
+    },
+    "host": "https://app.acme.example",
+    "matcher-name": "expired"
+  }
+]

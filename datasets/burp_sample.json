@@ -1,0 +1,22 @@
+{
+  "issues": [
+    {
+      "name": "SQL injection",
+      "host": "https://app.acme.example",
+      "path": "/login",
+      "severity": "high",
+      "confidence": "certain",
+      "issue_type": "sql-injection",
+      "serial_number": "burp-0001"
+    },
+    {
+      "name": "Missing security headers",
+      "host": "https://app.acme.example",
+      "path": "/",
+      "severity": "low",
+      "confidence": "certain",
+      "issue_type": "headers",
+      "serial_number": "burp-0002"
+    }
+  ]
+}
