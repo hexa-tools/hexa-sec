@@ -5,18 +5,24 @@ Enforces the conventions in AGENTS.md. Run as:
     python hexa_guard.py --check        # scan src/ and exit non-zero on violation
     python hexa_guard.py --check <dir>  # scan a specific directory
 
-Rules (R1-R9 + R12 + R15-R16 + R19-R21, the hexa-* family):
+Rules (hexa-* family; numbering is hexa-sec's, not the hexawyn hook's):
   R1  Domain purity: domain/ imports no scanner SDK, no app/adapters/infra.
   R2  Hexagonal: adapters never import domain directly (always via ports;
       only hexa_sec.domain.errors is allowed for HexaSecError subclasses).
   R3  Security: no secret material in source.
-  R4  SQL: no inline SQL string in Python (lives in sql/ files).
+  R4  SQL: no inline SQL string in Python (moved to sql/ files), incl. SELECT *.
   R5  Typing: no bare dict/list/tuple return annotations.
-  R6  Exception strategy: no try/except in application/service or domain/services.
+  R6  Exception strategy: no try/except and no generic raise (ValueError,
+      RuntimeError, TypeError, KeyError, Exception) in application/service
+      or domain/services — always raise a HexaSecError subclass.
   R7  Tenant isolation: multi-tenant SQL carries a tenant filter (placeholder).
   R8  Mandate: scan_asset flow references the consent (Godfrain) context.
   R9  Docker CLI usage confined to adapters/secondary/execution/.
+  R10 DDD: application/ports/driving/ holds only __init__.py, *_command.py,
+      *_response.py, *_service_port.py, *_use_case.py.
+  R11 SQL: no SELECT * in infrastructure/memory/ or report_store (explicit cols).
   R12 Typing: no ``Any`` (bare typing escapes) in typed layers.
+  R14 Mutation guard: read-only layers must not contain destructive language.
   R15 Imports: module-level only, no function-scoped imports (DI container exempt).
   R16 Line count: files under the protected layers are capped.
   R19 Layer boundaries (AST): the domain never imports app/infra; infra imports
@@ -70,9 +76,27 @@ _DOMAIN_DIRECT_RE = re.compile(r"from hexa_sec\.domain\.(?!errors)([a-z_][a-z0-9
 
 _TRY_RE = re.compile(r"\btry\s*:")
 _EXCEPT_RE = re.compile(r"\bexcept\b")
+_GENERIC_RAISE_RE = re.compile(
+    r"raise\s+(Exception|ValueError|RuntimeError|TypeError|KeyError)\s*\("
+)
 _DOCKER_CALL_RE = re.compile(
     r'subprocess\.run\(\s*\[?"docker"|["\']docker["\']\s*,\s*["\'](?:run|pull|create|wait|logs|rm|kill)["\']|^\s*import docker\b',
     re.MULTILINE,
+)
+
+# R10 — DDD: allowed stems in application/ports/driving/
+_DRIVING_PORT_MARKER = "/application/ports/driving/"
+_DRIVING_PORT_ALLOWED_SUFFIXES = ("_command", "_response", "_service_port", "_use_case")
+
+# R11 — no SELECT * in SQL-backed Python (explicit columns only).
+_SELECT_STAR_RE = re.compile(r"\b(?:SELECT|select)\s+\*")
+_SQL_PY_MARKERS = ("/infrastructure/memory/", "/report_store/")
+
+# R14 — mutation guard: destructive ops are forbidden in read-only layers.
+_READONLY_MARKERS = ("/application/ports/driving/", "/application/service/", "/domain/services/")
+_DESTRUCTIVE_RE = re.compile(
+    r"delete_namespace|kubectl delete|\bpatch[_ ]cluster.?role\b|scale replicas=0"
+    r"|replicas=0|\bdrain node\b|\bcordon node\b|delete_persistent_volume|drain\s+node"
 )
 
 # R12 — no "Any" typing escape (AGENTS.md: Any is forbidden outside tests/).
@@ -221,6 +245,25 @@ def find_violations(path: str, text: str) -> list[str]:
         and _EXCEPT_RE.search(text)
     ):
         violations.append("R6 try/except in a service (let HexaSecError propagate)")
+
+    if (
+        _SERVICE_MARKER in normalized or _DOMAIN_SERVICE_MARKER in normalized
+    ) and _GENERIC_RAISE_RE.search(text):
+        violations.append("R6 generic raise in a service (raise a HexaSecError subclass)")
+
+    if _DRIVING_PORT_MARKER in normalized and normalized.endswith(".py"):
+        stem = Path(normalized).stem
+        if stem != "__init__" and not stem.endswith(_DRIVING_PORT_ALLOWED_SUFFIXES):
+            violations.append(
+                f"R10 DDD driving-port: '{Path(normalized).name}' is not an allowed "
+                "driving port file (__init__, *_command, *_response, *_service_port, *_use_case)"
+            )
+
+    if any(marker in normalized for marker in _SQL_PY_MARKERS) and _SELECT_STAR_RE.search(text):
+        violations.append("R11 no SELECT * (use explicit columns) in SQL-backed Python")
+
+    if any(marker in normalized for marker in _READONLY_MARKERS) and _DESTRUCTIVE_RE.search(text):
+        violations.append("R14 mutation guard: destructive operation in a read-only layer")
 
     if (
         normalized.endswith("scan_asset_service.py")
