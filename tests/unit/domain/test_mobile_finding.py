@@ -22,7 +22,7 @@ def test_mobile_finding_embeds_secret() -> None:
         package="com.acme.app",
         platform=MobilePlatform.ANDROID,
         issue="hardcoded api key",
-        secret_type=SecretType.API_KEY,
+        secret_type=SecretType.APIKEY,
     )
     assert finding.embeds_secret() is True
 

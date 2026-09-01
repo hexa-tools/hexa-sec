@@ -55,3 +55,35 @@ def test_docker_in_adapter_outside_execution_flagged() -> None:
         'subprocess.run(["docker", "run", "-d", image])',
     )
     assert any(v.startswith("R9") for v in violations)
+
+
+def test_generic_raise_in_service_flagged() -> None:
+    violations = find_violations(
+        "src/hexa_sec/application/service/scan_asset_service.py",
+        "raise ValueError('boom')\n",
+    )
+    assert any(v.startswith("R6") for v in violations)
+
+
+def test_driving_port_bad_filename_flagged() -> None:
+    violations = find_violations(
+        "src/hexa_sec/application/ports/driving/correlate/bad_name.py",
+        "def go() -> None:\n    pass\n",
+    )
+    assert any(v.startswith("R10") for v in violations)
+
+
+def test_select_star_in_memory_flagged() -> None:
+    violations = find_violations(
+        "src/hexa_sec/infrastructure/memory/report_repository.py",
+        'cursor.execute("SELECT * FROM reports")',
+    )
+    assert any(v.startswith("R11") for v in violations)
+
+
+def test_mutation_in_readonly_layer_flagged() -> None:
+    violations = find_violations(
+        "src/hexa_sec/application/ports/driving/mcp_server.py",
+        "kubectl delete ns production",
+    )
+    assert any(v.startswith("R14") for v in violations)
