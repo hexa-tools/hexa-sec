@@ -1,0 +1,14 @@
+[build-system]
+requires = ["maturin>=1.5,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "hexa-sec-parse"
+version = "0.1.0"
+description = "Rust parsing hotspots behind driven ports, never a layer of its own."
+requires-python = ">=3.12"
+
+[tool.maturin]
+manifest-path = "crates/hexa-sec-parse/Cargo.toml"
+module-name = "hexa_sec_parse"
+strip = true

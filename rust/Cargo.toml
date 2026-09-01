@@ -1,0 +1,3 @@
+[workspace]
+members = ["crates/hexa-sec-parse"]
+resolver = "2"

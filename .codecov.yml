@@ -1,0 +1,39 @@
+# hexa-sec — Codecov configuration
+# Coverage is enforced at >= 95% (see CI --cov-fail-under, and the Makefile
+# `coverage` target) and mirrored here as the project/component targets.
+
+comment:
+  layout: "reach, diff, flags, components"
+  require_changes: false
+
+coverage:
+  status:
+    project:
+      default:
+        target: 95%
+        threshold: 0%
+    patch:
+      default:
+        target: 95%
+
+component_management:
+  individual_components:
+    - component_id: domain
+      name: Domain (pure)
+      paths:
+        - src/hexa_sec/domain/**
+    - component_id: application
+      name: Application (ports, services, use cases)
+      paths:
+        - src/hexa_sec/application/**
+    - component_id: adapters
+      name: Adapters (primary + secondary)
+      paths:
+        - src/hexa_sec/adapters/**
+    - component_id: infrastructure
+      name: Infrastructure (config, logging, memory)
+      paths:
+        - src/hexa_sec/infrastructure/**
+
+ignore:
+  - "**/__init__.py"
