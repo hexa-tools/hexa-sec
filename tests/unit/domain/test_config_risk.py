@@ -134,3 +134,28 @@ def test_for_asset_dedup_order_independent_for_evidence() -> None:
     second = ConfigRisk.for_asset("srv-01", (b, a))
     assert first == second
     assert first.findings[0].evidence == second.findings[0].evidence
+
+
+# --- Category: stabilité / déterminisme (ordre total, multi-éléments) -------
+
+
+def test_for_asset_dedup_complex_is_order_independent() -> None:
+    c_zzz = _finding(severity=Severity.CRITICAL, evidence="zzz")
+    c_aaa = _finding(severity=Severity.CRITICAL, evidence="aaa")
+    h_bbb = _finding(severity=Severity.HIGH, evidence="bbb")
+    evidences = {
+        ConfigRisk.for_asset("srv-01", permutation).findings[0].evidence
+        for permutation in _permutations((c_zzz, c_aaa, h_bbb))
+    }
+    assert evidences == {"aaa"}
+
+
+def _permutations(values: tuple[ConfigFinding, ...]) -> list[tuple[ConfigFinding, ...]]:
+    if len(values) <= 1:
+        return [values]
+    out: list[tuple[ConfigFinding, ...]] = []
+    for index in range(len(values)):
+        rest = values[:index] + values[index + 1 :]
+        for tail in _permutations(rest):
+            out.append((values[index],) + tail)
+    return out
