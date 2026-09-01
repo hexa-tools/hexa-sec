@@ -35,3 +35,26 @@ def test_mobile_finding_rejects_empty_package() -> None:
 def test_mobile_finding_rejects_empty_issue() -> None:
     with pytest.raises(ValueError):
         MobileFinding(package="com.acme.app", platform=MobilePlatform.IOS, issue="")
+
+
+def test_mobile_finding_rejects_non_platform() -> None:
+    with pytest.raises(ValueError):
+        MobileFinding(package="com.acme.app", platform="android", issue="x")  # type: ignore[arg-type]
+
+
+def test_mobile_finding_rejects_non_secret_type() -> None:
+    with pytest.raises(ValueError):
+        MobileFinding(
+            package="com.acme.app",
+            platform=MobilePlatform.ANDROID,
+            issue="hardcoded api key",
+            secret_type="api_key",  # type: ignore[arg-type]
+        )
+
+
+def test_mobile_finding_normalizes_fields() -> None:
+    finding = MobileFinding(
+        package="  com.acme.app  ", platform=MobilePlatform.ANDROID, issue="  hardcoded  "
+    )
+    assert finding.package == "com.acme.app"
+    assert finding.issue == "hardcoded"
