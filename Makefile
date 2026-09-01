@@ -37,7 +37,7 @@ deps-export:
 #  Code quality
 # ─────────────────────────────────────
 
-.PHONY: lint format format-check type-check check
+.PHONY: lint format format-check type-check check env-validate
 
 lint:
 	@echo "🔍 Linting Python with ruff..."
@@ -65,6 +65,7 @@ check:
 	@$(MAKE) lint
 	@$(MAKE) format-check
 	@$(MAKE) type-check
+	@$(MAKE) env-validate
 	@echo ""
 	@echo "✅ All checks passed"
 
@@ -108,6 +109,11 @@ update-badge:
 	@echo "🏷️  Updating test count badge in README.md..."
 	$(PYTHON) scripts/update_test_badge.py 2>/dev/null || echo "⚠️  No badge script yet"
 	@echo "✅ Badge updated"
+
+env-validate:
+	@echo "🔑 Validating .env contract (required keys + unknown rejection)..."
+	$(PYTHON) -m hexa_sec.infrastructure.config.env_contract
+	@echo "✅ .env contract valid"
 
 # ─────────────────────────────────────
 #  Guard
