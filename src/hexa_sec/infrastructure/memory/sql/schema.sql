@@ -19,6 +19,10 @@ CREATE TABLE IF NOT EXISTS audit_log (
     action      TEXT NOT NULL,
     actor       TEXT NOT NULL,
     mandate_id  TEXT,
+    scan_id     TEXT,
+    image       TEXT,
+    digest      TEXT,
+    duration_ms INTEGER,
     tenant_id   TEXT NOT NULL
 );
 

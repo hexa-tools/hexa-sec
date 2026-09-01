@@ -8,7 +8,7 @@ comparant deux exécutions à entrées identiques.
 
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime
 
 from hexa_sec.domain.api_risk.api_endpoint import ApiEndpoint
 from hexa_sec.domain.api_risk.api_finding import ApiFinding
@@ -20,6 +20,8 @@ from hexa_sec.domain.asset_inventory.port import Application, Port, Version
 from hexa_sec.domain.cloud_risk.cloud_finding import CloudFinding
 from hexa_sec.domain.cloud_risk.cloud_provider import CloudProvider
 from hexa_sec.domain.cloud_risk.cloud_resource import CloudResource
+from hexa_sec.domain.consent.audit_consent import AuditConsent
+from hexa_sec.domain.consent.authorization import Authorization
 from hexa_sec.domain.consent.mandate import Mandate, MandateId, MandateLevel
 from hexa_sec.domain.container_risk.container_finding import ContainerFinding
 from hexa_sec.domain.container_risk.image_ref import ImageRef
@@ -28,12 +30,16 @@ from hexa_sec.domain.dns_risk.subdomain import Subdomain
 from hexa_sec.domain.email_risk.dmarc_status import DmarcStatus
 from hexa_sec.domain.email_risk.email_finding import EmailFinding
 from hexa_sec.domain.email_risk.email_record import EmailRecord
+from hexa_sec.domain.finding.finding import FindingId
 from hexa_sec.domain.mobile_risk.mobile_finding import MobileFinding
 from hexa_sec.domain.mobile_risk.mobile_platform import MobilePlatform
+from hexa_sec.domain.report.priority_action import PriorityAction
+from hexa_sec.domain.report.report import Report, ReportId
 from hexa_sec.domain.scan.scan import Scan, ScanId
 from hexa_sec.domain.scan.scan_depth import ScanDepth
 from hexa_sec.domain.scan.scan_parameters import ScanParameters
 from hexa_sec.domain.scan.scan_status import ScanStatus
+from hexa_sec.domain.scoring.risk_score import RiskScore
 from hexa_sec.domain.secret_risk.secret_type import SecretType
 from hexa_sec.domain.wifi_risk.ssid import Ssid
 from hexa_sec.domain.wifi_risk.wifi_finding import WifiFinding
@@ -132,6 +138,90 @@ def test_asset_inventory_with_entry_is_reproducible() -> None:
     b = _inventory().with_entry(InventoryEntry(host="10.0.0.1", port=Port(22), application=Application("ssh")))
     assert a == b
     assert a.count() == 2
+
+
+def _report() -> Report:
+    return Report(
+        report_id=ReportId("rep_0001"),
+        title="Audit report",
+        global_score=RiskScore.from_value(62.0),
+        top_actions=(_priority_action(),),
+    )
+
+
+def _priority_action() -> PriorityAction:
+    return PriorityAction(
+        finding_id=FindingId("fnd_0001"),
+        issue="Exposed API key",
+        why="Account takeover risk",
+        fix="Rotate the key",
+        effort="5 min",
+        risk_score=RiskScore.from_value(95.0),
+    )
+
+
+def test_report_is_deterministic() -> None:
+    # catégorie 7 — un rapport identique produit des sections identiques, dans
+    # l'ordre, entre deux constructions.
+    first = _report()
+    second = _report()
+    assert first == second
+    assert first.sections() == second.sections()
+    assert first.top_actions == second.top_actions
+
+
+def test_priority_action_is_deterministic() -> None:
+    # catégorie 7 — la même action produite deux fois est identique et son
+    # score de priorité est stable.
+    assert _priority_action() == _priority_action()
+    assert _priority_action().risk_score.value == 95.0
+
+
+def _mandate() -> Mandate:
+    return Mandate(
+        mandate_id=MandateId("mnd_0001"),
+        client="Acme Corp",
+        targets=("10.0.0.1",),
+        start_date=date(2026, 1, 1),
+        end_date=date(2026, 12, 31),
+        level=MandateLevel.STANDARD,
+        signature="REF-2026-0001",
+    )
+
+
+def test_mandate_is_deterministic() -> None:
+    # catégorie 7 — un mandat identique produit les mêmes verdicts (covers /
+    # is_valid avec une date fixe) à chaque exécution.
+    first = _mandate()
+    second = _mandate()
+    assert first == second
+    assert first.covers("10.0.0.1") == second.covers("10.0.0.1")
+    assert first.is_valid(date(2026, 6, 1)) is True
+    assert second.is_valid(date(2026, 6, 1)) is True
+
+
+def test_authorization_is_deterministic() -> None:
+    # catégorie 7 — la même autorisation produite deux fois est identique
+    first = Authorization(authorizer="Acme", scope="10.0.0.0/24", granted_on=date(2026, 1, 1), reference="R")
+    second = Authorization(authorizer="Acme", scope="10.0.0.0/24", granted_on=date(2026, 1, 1), reference="R")
+    assert first == second
+
+
+def test_audit_consent_is_deterministic() -> None:
+    # catégorie 7 — l'entrée de log est reproductible (append-only, jamais modifiée)
+    first = AuditConsent(
+        mandate_id=MandateId("mnd_0001"),
+        recorded_at=datetime(2026, 1, 1, 12, 0),
+        actor="consultant@hexa.example",
+        decision="approved",
+    )
+    second = AuditConsent(
+        mandate_id=MandateId("mnd_0001"),
+        recorded_at=datetime(2026, 1, 1, 12, 0),
+        actor="consultant@hexa.example",
+        decision="approved",
+    )
+    assert first == second
 
 
 def test_scan_creation_is_deterministic() -> None:

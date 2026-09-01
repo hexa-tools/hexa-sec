@@ -18,7 +18,7 @@ class AuditConsent:
     decision: str
 
     def __post_init__(self) -> None:
-        if not self.actor:
+        if not self.actor or not self.actor.strip():
             raise ValueError("consent actor cannot be empty")
-        if not self.decision:
+        if not self.decision or not self.decision.strip():
             raise ValueError("consent decision cannot be empty")

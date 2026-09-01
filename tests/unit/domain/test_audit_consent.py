@@ -38,3 +38,23 @@ def test_audit_consent_rejects_empty_decision() -> None:
             actor="consultant@hexa.example",
             decision="",
         )
+
+
+def test_audit_consent_rejects_whitespace_actor() -> None:
+    with pytest.raises(ValueError):
+        AuditConsent(
+            mandate_id=MandateId("mnd_0001"),
+            recorded_at=datetime(2026, 1, 1, 12, 0),
+            actor="   ",
+            decision="approved",
+        )
+
+
+def test_audit_consent_rejects_whitespace_decision() -> None:
+    with pytest.raises(ValueError):
+        AuditConsent(
+            mandate_id=MandateId("mnd_0001"),
+            recorded_at=datetime(2026, 1, 1, 12, 0),
+            actor="consultant@hexa.example",
+            decision="  ",
+        )

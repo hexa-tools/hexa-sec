@@ -21,6 +21,7 @@ families:
       - name: web_vuln_scan_zap
         type: local
         docker: true
+        image: zaproxy/zap-stable
         description: "OWASP ZAP — open-source web vulnerability scanner"
         questions:
           - "Run an automated ZAP scan against the staging environment"
@@ -29,6 +30,8 @@ families:
       - name: web_cve_templates_nuclei
         type: local
         docker: true
+        image: projectdiscovery/nuclei
+        digest: sha256:582d5546902e67052097cb2d07296c642d50a1afc5e44623cb038845df9a32eb
         description: "Nuclei — vulnerability templates scanner (ProjectDiscovery)"
         questions:
           - "Run nuclei against the public API endpoints with critical severity only"
@@ -37,6 +40,7 @@ families:
       - name: web_wordpress_audit
         type: local
         docker: true
+        image: wpscanteam/wpscan
         description: "WPScan — WordPress vulnerability and plugin scanner"
         questions:
           - "Check our WordPress site for vulnerable plugins and themes"
@@ -45,6 +49,7 @@ families:
       - name: web_server_misconfig_nikto
         type: local
         docker: true
+        image: sullo/nikto
         description: "Nikto — web server misconfiguration and outdated files scanner"
         questions:
           - "Nikto scan the webserver for default files and outdated versions"
@@ -74,6 +79,7 @@ families:
       - name: web_fuzzing_ffuf
         type: local
         docker: true
+        image: ghcr.io/ffuf/ffuf
         description: "ffuf — fast fuzzing for directories, parameters, and subdomains"
         questions:
           - "Fuzz for subdomains on the corporate domain with ffuf"
@@ -81,6 +87,7 @@ families:
       - name: web_dns_bruteforce_gobuster
         type: local
         docker: true
+        image: oj/gobuster
         description: "Gobuster — brute-force directories and DNS subdomains"
         questions:
           - "Gobuster the main site for backup and config files"
@@ -151,6 +158,7 @@ families:
       - name: web_http_probe_httpx
         type: local
         docker: true
+        image: projectdiscovery/httpx
         description: "httpx — fast HTTP probing (ProjectDiscovery)"
         questions:
           - "httpx to probe the discovered hosts for live endpoints"
@@ -184,6 +192,8 @@ families:
       - name: network_port_discovery
         type: local
         docker: true
+        image: instrumentisto/nmap
+        digest: sha256:96f6ed194519b62421a1a1c57809e65a7f94d2aa1c8c25676f247e5e148c0827
         description: "Nmap — port and service discovery"
         questions:
           - "Nmap scan the staging environment for open ports and versions"
@@ -393,6 +403,8 @@ families:
       - name: code_git_secrets_scan
         type: local
         docker: true
+        image: zricethezav/gitleaks
+        digest: sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f
         description: "Gitleaks — detect hardcoded secrets in git repositories"
         questions:
           - "Scan the backend repo with gitleaks for hardcoded API keys"
@@ -407,6 +419,7 @@ families:
       - name: code_pattern_security_scan
         type: local
         docker: true
+        image: semgrep/semgrep
         description: "Semgrep — code pattern security rule enforcement"
         questions:
           - "Semgrep scan the service code for injection patterns"
@@ -421,6 +434,7 @@ families:
       - name: code_dependency_image_scan
         type: local
         docker: true
+        image: aquasec/trivy
         description: "Trivy — container image and dependency vulnerability scanner"
         questions:
           - "Trivy scan the payment-service container image for CVEs"
@@ -583,6 +597,7 @@ families:
       - name: dns_passive_subdomain_discovery
         type: local
         docker: true
+        image: projectdiscovery/subfinder
         description: "subfinder — passive subdomain discovery from public sources"
         questions:
           - "Subfinder to find all subdomains of our main domain"
@@ -590,6 +605,7 @@ families:
       - name: dns_bruteforce_subdomain_scan
         type: local
         docker: true
+        image: caffix/amass
         description: "Amass — comprehensive DNS enumeration and subdomain brute-force"
         questions:
           - "Run Amass to discover hidden subdomains and external footprints"
@@ -646,6 +662,7 @@ families:
       - name: dns_probe_dnsx
         type: local
         docker: true
+        image: projectdiscovery/dnsx
         description: "dnsx — fast DNS probing (ProjectDiscovery)"
         questions:
           - "dnsx to resolve and filter live subdomains"
@@ -657,6 +674,7 @@ families:
       - name: cloud_cis_audit
         type: local
         docker: true
+        image: ghcr.io/prowler-cloud/prowler
         description: "Prowler — cloud CIS benchmark auditor (AWS/Azure/GCP)"
         questions:
           - "Prowler to check AWS account compliance with CIS benchmarks"
@@ -871,6 +889,7 @@ families:
       - name: container_image_cve_scan
         type: local
         docker: true
+        image: anchore/grype
         description: "Grype — container image vulnerability scanning"
         questions:
           - "Grype to scan payment-service image for CVE vulnerabilities"
