@@ -52,6 +52,7 @@ _SECRET_PATTERNS = (
 _INLINE_SQL_RE = re.compile(
     r"SELECT .* FROM|INSERT INTO|CREATE TABLE|UPDATE .* SET|DELETE FROM|CREATE INDEX"
 )
+_DOCKER_EXEC_MARKER = "/adapters/secondary/execution/"
 _LOAD_SQL_MARKER = "read_text"
 
 _BARE_ANNOTATION_RE = re.compile(r"->\s*(dict|list|tuple)\b(?!\[)")
@@ -59,6 +60,14 @@ _DOMAIN_DIRECT_RE = re.compile(r"from hexa_sec\.domain\.(?!errors)([a-z_][a-z0-9
 
 _TRY_RE = re.compile(r"\btry\s*:")
 _EXCEPT_RE = re.compile(r"\bexcept\b")
+_DOCKER_CALL_RE = re.compile(
+    r'subprocess\.run\(\s*\[?"docker"|["\']docker["\']\s*,\s*["\'](?:run|pull|create|wait|logs|rm|kill)["\']|^\s*import docker\b',
+    re.MULTILINE,
+)
+
+
+def _docker_invocation(text: str) -> bool:
+    return _DOCKER_CALL_RE.search(text) is not None
 
 
 def find_violations(path: str, text: str) -> list[str]:
@@ -98,6 +107,13 @@ def find_violations(path: str, text: str) -> list[str]:
         and "NotImplementedError" not in text
     ):
         violations.append("R8 mandate: scan_asset orchestration must check the consent context")
+
+    if (
+        normalized.endswith(".py")
+        and _DOCKER_EXEC_MARKER not in normalized
+        and _docker_invocation(text)
+    ):
+        violations.append("R9 docker CLI usage must be confined to adapters/secondary/execution/")
 
     return violations
 

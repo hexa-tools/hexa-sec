@@ -73,7 +73,8 @@ check:
 #  Tests (Python)
 # ─────────────────────────────────────
 
-.PHONY: test test-integration test-e2e test-e2e-ci test-all coverage update-badge
+.PHONY: test test-integration test-e2e test-e2e-ci test-all coverage update-badge \
+	docker-check test-docker
 
 test:
 	@echo "🧪 Running Python unit tests..."
@@ -81,9 +82,22 @@ test:
 	@echo "✅ Unit tests passed"
 
 test-integration:
-	@echo "🔬 Running Python integration tests (real SQLite, no network)..."
+	@echo "🔬 Running Python integration tests (real SQLite, real Docker)..."
 	$(PYTEST) tests/integration/ -v -m integration --strict-markers --tb=short
 	@echo "✅ Integration tests passed"
+
+docker-check:
+	@echo "🐳 Checking Docker availability..."
+	@docker version --format '{{.Server.Version}}' >/dev/null 2>&1 || ( \
+		echo "❌ Docker daemon not available — install Docker or start it."; \
+		exit 1)
+	@echo "✅ Docker available"
+
+test-docker:
+	@echo "🐳 Running the Docker runtime integration test..."
+	$(MAKE) docker-check
+	$(PYTEST) tests/integration/test_docker_runtime.py -v -m integration --strict-markers --tb=short
+	@echo "✅ Docker runtime test passed"
 
 test-e2e:
 	@echo "🧪 Running Python E2E tests (mocked, no real target)..."
@@ -101,8 +115,8 @@ test-all:
 	@echo "✅ All tests passed"
 
 coverage:
-	@echo "📊 Running Python tests with coverage (>=95%)..."
-	$(PYTEST) tests/ -m "not e2e" --cov=hexa_sec --cov-report=term-missing --cov-fail-under=95
+	@echo "📊 Running Python tests with coverage (>=95%, unit only — no Docker)..."
+	$(PYTEST) tests/ -m "not e2e and not integration" --cov=hexa_sec --cov-report=term-missing --cov-fail-under=95
 	@echo "✅ Coverage threshold met"
 
 update-badge:
@@ -201,6 +215,11 @@ help:
 	@echo "  make test-integration      → Run integration tests (real SQLite, no network)"
 	@echo "  make test-e2e              → Run E2E tests (mocked)"
 	@echo "  make test-e2e-ci           → Run E2E tests (release CI)"
+	@echo ""
+	@echo "🐳 DOCKER RUNTIME"
+	@echo "  make docker-check          → Verify Docker daemon is available"
+	@echo "  make test-docker           → Run the Docker runtime integration test"
+	@echo "  make test-integration      → Run integration tests (SQLite + Docker)"
 	@echo "  make test-all              → Run unit + integration tests"
 	@echo "  make coverage              → Run tests with coverage (≥95%)"
 	@echo "  make update-badge          → Update test count badge in README.md"

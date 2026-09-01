@@ -17,16 +17,21 @@ class AuditLogId:
 
 @dataclass(frozen=True)
 class AuditLog:
-    """A single immutable operation record."""
+    """A single immutable operation record, including the executed image digest."""
 
     entry_id: AuditLogId
     recorded_at: datetime
     action: str
     actor: str
     mandate_id: MandateId | None
+    tenant_id: str | None = None
+    scan_id: str | None = None
+    image: str | None = None
+    digest: str | None = None
+    duration_ms: int | None = None
 
     def __post_init__(self) -> None:
-        if not self.action:
+        if not self.action or not self.action.strip():
             raise ValueError("audit action cannot be empty")
-        if not self.actor:
+        if not self.actor or not self.actor.strip():
             raise ValueError("audit actor cannot be empty")

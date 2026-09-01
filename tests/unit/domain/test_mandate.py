@@ -44,6 +44,21 @@ def test_mandate_valid_within_period() -> None:
     assert _mandate().is_valid(date(2026, 6, 1)) is True
 
 
+def test_mandate_valid_at_start_boundary() -> None:
+    # frontières : exactement au début de validité -> True (bornes incluses)
+    assert _mandate().is_valid(date(2026, 1, 1)) is True
+
+
+def test_mandate_valid_at_end_boundary() -> None:
+    # frontières : exactement à la fin de validité -> True (bornes incluses)
+    assert _mandate().is_valid(date(2026, 12, 31)) is True
+
+
+def test_mandate_not_yet_valid_before_start() -> None:
+    # frontières : juste avant le début -> False (pas encore valide)
+    assert _mandate().is_valid(date(2025, 12, 31)) is False
+
+
 def test_mandate_expired_after_end() -> None:
     assert _mandate().is_valid(date(2027, 1, 1)) is False
 
@@ -61,3 +76,14 @@ def test_mandate_rejects_end_before_start() -> None:
 def test_mandate_rejects_missing_signature() -> None:
     with pytest.raises(ValueError):
         _mandate(signature="")
+
+
+def test_mandate_rejects_whitespace_signature() -> None:
+    # « signature blanche » -> ValueError (non signé = invalide)
+    with pytest.raises(ValueError):
+        _mandate(signature="   ")
+
+
+def test_mandate_rejects_whitespace_client() -> None:
+    with pytest.raises(ValueError):
+        _mandate(client="   ")

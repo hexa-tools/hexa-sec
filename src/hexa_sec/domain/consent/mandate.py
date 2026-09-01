@@ -43,8 +43,10 @@ class Mandate:
             raise ValueError("mandate must cover at least one target")
         if self.end_date < self.start_date:
             raise ValueError("mandate end date cannot precede start date")
-        if not self.signature:
+        if not self.signature or not self.signature.strip():
             raise ValueError("mandate must be signed")
+        if not self.client or not self.client.strip():
+            raise ValueError("mandate client cannot be empty")
 
     def covers(self, target: str) -> bool:
         return target in self.targets

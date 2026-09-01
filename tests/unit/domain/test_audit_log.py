@@ -21,6 +21,24 @@ def test_audit_log_creation() -> None:
     assert entry.action == "scan_asset"
 
 
+def test_audit_log_carries_execution_digest_and_tenant() -> None:
+    entry = AuditLog(
+        entry_id=AuditLogId("log_0010"),
+        recorded_at=datetime(2026, 1, 1, 12, 0),
+        action="scan_asset",
+        actor="operator@hexa.example",
+        mandate_id=MandateId("mnd_0001"),
+        tenant_id="tnt_0001",
+        scan_id="scan_0001",
+        image="instrumentisto/nmap@sha256:96f6ed19",
+        digest="sha256:96f6ed19",
+        duration_ms=1842,
+    )
+    assert entry.tenant_id == "tnt_0001"
+    assert entry.digest == "sha256:96f6ed19"
+    assert entry.duration_ms == 1842
+
+
 def test_audit_log_rejects_empty_action() -> None:
     with pytest.raises(ValueError):
         AuditLog(
