@@ -15,3 +15,12 @@ class ScanStatus(Enum):
 
     def is_terminal(self) -> bool:
         return self in (ScanStatus.DONE, ScanStatus.FAILED)
+
+    def can_transition_to(self, next_status: ScanStatus) -> bool:
+        allowed = {
+            ScanStatus.PENDING: {ScanStatus.RUNNING},
+            ScanStatus.RUNNING: {ScanStatus.DONE, ScanStatus.FAILED},
+            ScanStatus.DONE: set(),
+            ScanStatus.FAILED: set(),
+        }
+        return next_status in allowed[self]
