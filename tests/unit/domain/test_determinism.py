@@ -15,6 +15,8 @@ from hexa_sec.domain.api_risk.api_finding import ApiFinding
 from hexa_sec.domain.api_risk.owasp_category import OwaspApiCategory
 from hexa_sec.domain.asset.asset import Asset
 from hexa_sec.domain.asset.asset_type import AssetType
+from hexa_sec.domain.asset_inventory.inventory import AssetInventory, InventoryEntry
+from hexa_sec.domain.asset_inventory.port import Application, Port, Version
 from hexa_sec.domain.cloud_risk.cloud_finding import CloudFinding
 from hexa_sec.domain.cloud_risk.cloud_provider import CloudProvider
 from hexa_sec.domain.cloud_risk.cloud_resource import CloudResource
@@ -107,6 +109,29 @@ def _scan() -> Scan:
         ScanParameters(depth=ScanDepth.COMPLETE),
         as_of=date(2026, 6, 1),
     )
+
+
+def _inventory() -> AssetInventory:
+    return AssetInventory(
+        host="10.0.0.1",
+        entries=(
+            InventoryEntry(host="10.0.0.1", port=Port(443), application=Application("https"), version=Version("1.24")),
+        ),
+    )
+
+
+def test_asset_inventory_is_deterministic() -> None:
+    # catégorie 7 — des données identiques produisent toujours le même inventaire
+    assert _inventory() == _inventory()
+    assert _inventory().open_ports() == _inventory().open_ports()
+
+
+def test_asset_inventory_with_entry_is_reproducible() -> None:
+    # catégorie 7 — l'ajout (with_entry) est stable et reproductible
+    a = _inventory().with_entry(InventoryEntry(host="10.0.0.1", port=Port(22), application=Application("ssh")))
+    b = _inventory().with_entry(InventoryEntry(host="10.0.0.1", port=Port(22), application=Application("ssh")))
+    assert a == b
+    assert a.count() == 2
 
 
 def test_scan_creation_is_deterministic() -> None:
