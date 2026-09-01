@@ -32,3 +32,27 @@ def test_container_finding_not_severe_on_low() -> None:
 def test_container_finding_rejects_empty_cve() -> None:
     with pytest.raises(ValueError):
         ContainerFinding(image=ImageRef("acme/payment", "1.4.2"), cve="")
+
+
+def test_container_finding_rejects_blank_cve() -> None:
+    with pytest.raises(ValueError):
+        ContainerFinding(image=ImageRef("acme/payment", "1.4.2"), cve="   ")
+
+
+def test_container_finding_normalizes_cve_upper() -> None:
+    finding = ContainerFinding(
+        image=ImageRef("acme/payment", "1.4.2"), cve="cve-2024-3094", severity=Severity.CRITICAL
+    )
+    assert finding.cve == "CVE-2024-3094"
+
+
+def test_container_finding_rejects_non_image() -> None:
+    with pytest.raises(ValueError):
+        ContainerFinding(image="acme/payment:1.4.2", cve="CVE-2024-3094")  # type: ignore[arg-type]
+
+
+def test_container_finding_rejects_non_severity() -> None:
+    with pytest.raises(ValueError):
+        ContainerFinding(
+            image=ImageRef("acme/payment", "1.4.2"), cve="CVE-2024-3094", severity="critical"
+        )  # type: ignore[arg-type]
