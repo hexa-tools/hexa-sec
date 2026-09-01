@@ -47,3 +47,28 @@ def test_correlation_rejects_empty_reason() -> None:
             impact=ImpactScore(value=0.4),
             reason="",
         )
+
+
+def test_correlation_rejects_whitespace_reason() -> None:
+    with pytest.raises(ValueError):
+        Correlation(
+            correlation_id=CorrelationId("cor_0004"),
+            type=CorrelationType.TEMPORAL,
+            assets=(),
+            findings=(FindingId("fnd_0002"),),
+            impact=ImpactScore(value=0.4),
+            reason="   ",
+        )
+
+
+def test_correlation_accepts_empty_assets_with_findings() -> None:
+    # edge case : une corrélation temporelle/brut peut avoir 0 asset lié
+    correlation = Correlation(
+        correlation_id=CorrelationId("cor_0005"),
+        type=CorrelationType.TEMPORAL,
+        assets=(),
+        findings=(FindingId("fnd_0002"),),
+        impact=ImpactScore(value=0.4),
+        reason="New exposure since the previous scan.",
+    )
+    assert correlation.assets == ()
