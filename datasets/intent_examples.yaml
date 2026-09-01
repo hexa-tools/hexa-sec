@@ -13,6 +13,7 @@ web_vuln_scan_burp:
   - "Run Burp Suite against the target for a security audit"
   - "Is Burp Suite available and up to date for this engagement?"
   - "Scan the primary target with Burp Suite and summarize the findings"
+  - "Which OWASP A0x categories does the payment app expose?"
   description: Burp Suite — comprehensive web app vulnerability scanning
 
 web_vuln_scan_zap:
@@ -23,6 +24,7 @@ web_vuln_scan_zap:
   - "Run OWASP ZAP against the target for a security audit"
   - "Is OWASP ZAP available and up to date for this engagement?"
   - "Scan the primary target with OWASP ZAP and summarize the findings"
+  - "Which OWASP Top 10 category does the staging app fail?"
   description: OWASP ZAP — open-source web vulnerability scanner
 
 web_cve_templates_nuclei:
@@ -34,6 +36,7 @@ web_cve_templates_nuclei:
   - "Is Nuclei available and up to date for this engagement?"
   - "Scan the primary target with Nuclei and summarize the findings"
   - "Schedule a nightly COMPLETE nuclei scan on the staging environment"
+  - "Classify the findings by OWASP category A01-A10"
   description: Nuclei — vulnerability templates scanner (ProjectDiscovery)
 
 web_wordpress_audit:
