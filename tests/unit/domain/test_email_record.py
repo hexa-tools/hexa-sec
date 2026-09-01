@@ -22,3 +22,7 @@ def test_email_record_defaults() -> None:
 def test_email_record_rejects_empty_domain() -> None:
     with pytest.raises(ValueError):
         EmailRecord(domain="")
+
+
+def test_email_record_normalizes_domain() -> None:
+    assert EmailRecord(domain="  acme.example  ").domain == "acme.example"
