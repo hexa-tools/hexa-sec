@@ -236,6 +236,7 @@ network_port_discovery:
   - "Scan the primary target with Nmap and summarize the findings"
   - "What did Nmap report on the latest run?"
   - "Schedule the nmap scan outside business hours and exclude the DB host"
+  - "Report the open ports and detected versions for each host"
   description: Nmap — port and service discovery
 
 network_fast_port_scan:
@@ -246,6 +247,7 @@ network_fast_port_scan:
   - "Is Masscan available and up to date for this engagement?"
   - "Scan the primary target with Masscan and summarize the findings"
   - "What did Masscan report on the latest run?"
+  - "Build an inventory of ports and services across the whole range"
   description: Masscan — ultra-fast port scanner for large IP ranges
 
 network_internet_scan:
@@ -266,6 +268,7 @@ network_local_discovery_arp:
   - "Is Netdiscover available and up to date for this engagement?"
   - "Scan the primary target with Netdiscover and summarize the findings"
   - "What did Netdiscover report on the latest run?"
+  - "List all devices and their discovered ports on the local subnet"
   description: Netdiscover — ARP-based local network device discovery
 
 network_login_bruteforce:
