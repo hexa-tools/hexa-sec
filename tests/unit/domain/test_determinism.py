@@ -8,7 +8,7 @@ comparant deux exécutions à entrées identiques.
 
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime
 
 from hexa_sec.domain.api_risk.api_endpoint import ApiEndpoint
 from hexa_sec.domain.api_risk.api_finding import ApiFinding
@@ -20,6 +20,8 @@ from hexa_sec.domain.asset_inventory.port import Application, Port, Version
 from hexa_sec.domain.cloud_risk.cloud_finding import CloudFinding
 from hexa_sec.domain.cloud_risk.cloud_provider import CloudProvider
 from hexa_sec.domain.cloud_risk.cloud_resource import CloudResource
+from hexa_sec.domain.consent.audit_consent import AuditConsent
+from hexa_sec.domain.consent.authorization import Authorization
 from hexa_sec.domain.consent.mandate import Mandate, MandateId, MandateLevel
 from hexa_sec.domain.container_risk.container_finding import ContainerFinding
 from hexa_sec.domain.container_risk.image_ref import ImageRef
@@ -173,6 +175,53 @@ def test_priority_action_is_deterministic() -> None:
     # score de priorité est stable.
     assert _priority_action() == _priority_action()
     assert _priority_action().risk_score.value == 95.0
+
+
+def _mandate() -> Mandate:
+    return Mandate(
+        mandate_id=MandateId("mnd_0001"),
+        client="Acme Corp",
+        targets=("10.0.0.1",),
+        start_date=date(2026, 1, 1),
+        end_date=date(2026, 12, 31),
+        level=MandateLevel.STANDARD,
+        signature="REF-2026-0001",
+    )
+
+
+def test_mandate_is_deterministic() -> None:
+    # catégorie 7 — un mandat identique produit les mêmes verdicts (covers /
+    # is_valid avec une date fixe) à chaque exécution.
+    first = _mandate()
+    second = _mandate()
+    assert first == second
+    assert first.covers("10.0.0.1") == second.covers("10.0.0.1")
+    assert first.is_valid(date(2026, 6, 1)) is True
+    assert second.is_valid(date(2026, 6, 1)) is True
+
+
+def test_authorization_is_deterministic() -> None:
+    # catégorie 7 — la même autorisation produite deux fois est identique
+    first = Authorization(authorizer="Acme", scope="10.0.0.0/24", granted_on=date(2026, 1, 1), reference="R")
+    second = Authorization(authorizer="Acme", scope="10.0.0.0/24", granted_on=date(2026, 1, 1), reference="R")
+    assert first == second
+
+
+def test_audit_consent_is_deterministic() -> None:
+    # catégorie 7 — l'entrée de log est reproductible (append-only, jamais modifiée)
+    first = AuditConsent(
+        mandate_id=MandateId("mnd_0001"),
+        recorded_at=datetime(2026, 1, 1, 12, 0),
+        actor="consultant@hexa.example",
+        decision="approved",
+    )
+    second = AuditConsent(
+        mandate_id=MandateId("mnd_0001"),
+        recorded_at=datetime(2026, 1, 1, 12, 0),
+        actor="consultant@hexa.example",
+        decision="approved",
+    )
+    assert first == second
 
 
 def test_scan_creation_is_deterministic() -> None:
