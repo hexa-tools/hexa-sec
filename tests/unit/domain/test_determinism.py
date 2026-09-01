@@ -31,6 +31,9 @@ from hexa_sec.domain.email_risk.dmarc_status import DmarcStatus
 from hexa_sec.domain.email_risk.email_finding import EmailFinding
 from hexa_sec.domain.email_risk.email_record import EmailRecord
 from hexa_sec.domain.finding.finding import FindingId
+from hexa_sec.domain.finding.severity import Severity
+from hexa_sec.domain.web_risk.owasp_category import OwaspCategory
+from hexa_sec.domain.web_risk.web_finding import WebFinding
 from hexa_sec.domain.mobile_risk.mobile_finding import MobileFinding
 from hexa_sec.domain.mobile_risk.mobile_platform import MobilePlatform
 from hexa_sec.domain.report.priority_action import PriorityAction
@@ -222,6 +225,33 @@ def test_audit_consent_is_deterministic() -> None:
         decision="approved",
     )
     assert first == second
+
+
+def test_web_finding_is_deterministic() -> None:
+    # catégorie 7 — le même finding produit deux fois est identique, sa
+    # catégorie OWASP et sa sévérité sont stables.
+    first = WebFinding(
+        asset="https://app.example",
+        method="sql_injection",
+        category=OwaspCategory.INJECTION,
+        severity=Severity.HIGH,
+        evidence="GET /login?user=1' OR '1'='1",
+    )
+    second = WebFinding(
+        asset="https://app.example",
+        method="sql_injection",
+        category=OwaspCategory.INJECTION,
+        severity=Severity.HIGH,
+        evidence="GET /login?user=1' OR '1'='1",
+    )
+    assert first == second
+    assert first.category is OwaspCategory.INJECTION
+    assert second.severity is Severity.HIGH
+
+
+def test_owasp_normalize_is_deterministic() -> None:
+    # catégorie 7 — la normalisation OWASP est reproductible
+    assert OwaspCategory.normalize("A03") is OwaspCategory.normalize("a03")
 
 
 def test_scan_creation_is_deterministic() -> None:

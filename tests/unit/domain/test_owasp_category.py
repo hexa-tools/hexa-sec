@@ -1,18 +1,50 @@
-"""Tests for OwaspApiCategory (context: api_risk)."""
+"""Tests for OwaspCategory (OWASP Top 10) — context: web_risk, SEC-10."""
 
 from __future__ import annotations
 
-from hexa_sec.domain.api_risk.owasp_category import OwaspApiCategory
+import pytest
+
+from hexa_sec.domain.web_risk.owasp_category import OwaspCategory
 
 
-def test_owasp_api_category_covers_top_ten() -> None:
-    assert len(list(OwaspApiCategory)) == 10
+def test_top_ten_members() -> None:
+    assert OwaspCategory.BROKEN_ACCESS_CONTROL.value == "a01"
+    assert OwaspCategory.INJECTION.value == "a03"
+    assert OwaspCategory.SERVER_SIDE_REQUEST_FORGERY.value == "a10"
 
 
-def test_owasp_api_category_values_are_unique() -> None:
-    values = [member.value for member in OwaspApiCategory]
-    assert len(values) == len(set(values))
+def test_top_ten_has_exactly_ten() -> None:
+    assert len(list(OwaspCategory)) == 10
 
 
-def test_owasp_api_category_first_entry() -> None:
-    assert OwaspApiCategory.BROKEN_OBJECT_LEVEL_AUTHORIZATION.value == "api1"
+def test_order_ascending() -> None:
+    ordered = sorted(OwaspCategory, key=lambda c: c.order)
+    assert [c.order for c in ordered] == list(range(1, 11))
+    assert ordered[0] is OwaspCategory.BROKEN_ACCESS_CONTROL
+    assert ordered[-1] is OwaspCategory.SERVER_SIDE_REQUEST_FORGERY
+
+
+@pytest.mark.parametrize(
+    ("raw", "expected"),
+    [
+        ("A01", OwaspCategory.BROKEN_ACCESS_CONTROL),
+        ("a01", OwaspCategory.BROKEN_ACCESS_CONTROL),
+        ("A03", OwaspCategory.INJECTION),
+        ("A05", OwaspCategory.SECURITY_MISCONFIGURATION),
+        ("A10", OwaspCategory.SERVER_SIDE_REQUEST_FORGERY),
+    ],
+)
+def test_normalize_accepts_codes(raw: str, expected: OwaspCategory) -> None:
+    assert OwaspCategory.normalize(raw) is expected
+
+
+def test_normalize_rejects_unknown() -> None:
+    # catégorie inconnue -> rejet à la normalisation, jamais devinée
+    with pytest.raises(ValueError):
+        OwaspCategory.normalize("A99")
+    with pytest.raises(ValueError):
+        OwaspCategory.normalize("bogus")
+
+
+def test_from_code_roundtrip() -> None:
+    assert OwaspCategory.from_code("a01") is OwaspCategory.BROKEN_ACCESS_CONTROL
