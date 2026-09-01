@@ -26,7 +26,7 @@ class CorrelationId:
 class Correlation:
     """A deterministic cross-finding insight."""
 
-    correlation_id: CorrelationId | None
+    correlation_id: CorrelationId
     type: CorrelationType
     assets: tuple[AssetId, ...]
     findings: tuple[FindingId, ...]
@@ -36,5 +36,5 @@ class Correlation:
     def __post_init__(self) -> None:
         if not self.findings:
             raise ValueError("correlation requires at least one source finding (evidence)")
-        if not self.reason:
+        if not self.reason or not self.reason.strip():
             raise ValueError("correlation requires a plain-language reason")
