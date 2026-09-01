@@ -22,3 +22,8 @@ def test_dns_record_rejects_empty_name() -> None:
 def test_dns_record_rejects_empty_value() -> None:
     with pytest.raises(ValueError):
         DnsRecord(name="www.acme.example", record_type=RecordType.A, value="")
+
+
+def test_dns_record_rejects_non_type() -> None:
+    with pytest.raises(ValueError):
+        DnsRecord(name="www.acme.example", record_type="a", value="10.0.0.1")  # type: ignore[arg-type]

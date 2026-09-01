@@ -18,5 +18,7 @@ class DnsRecord:
     def __post_init__(self) -> None:
         if not self.name.strip():
             raise ValueError("dns record name cannot be empty")
+        if not isinstance(self.record_type, RecordType):
+            raise ValueError("dns record record_type must be a RecordType")
         if not self.value:
             raise ValueError("dns record value cannot be empty")
