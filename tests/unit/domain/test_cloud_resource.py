@@ -37,3 +37,18 @@ def test_cloud_resource_rejects_empty_id() -> None:
 def test_cloud_resource_rejects_empty_type() -> None:
     with pytest.raises(ValueError):
         CloudResource(provider=CloudProvider.AWS, resource_id="x", resource_type="")
+
+
+def test_cloud_resource_rejects_non_provider() -> None:
+    with pytest.raises(ValueError):
+        CloudResource(provider="aws", resource_id="x", resource_type="aws_s3_bucket")  # type: ignore[arg-type]
+
+
+def test_cloud_resource_normalizes_fields() -> None:
+    resource = CloudResource(
+        provider=CloudProvider.GCP,
+        resource_id="  bucket  ",
+        resource_type="  storage  ",
+    )
+    assert resource.resource_id == "bucket"
+    assert resource.resource_type == "storage"

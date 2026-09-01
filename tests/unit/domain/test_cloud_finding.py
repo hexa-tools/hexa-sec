@@ -28,7 +28,9 @@ def _private_resource() -> CloudResource:
 
 
 def test_cloud_finding_creation() -> None:
-    finding = CloudFinding(resource=_public_resource(), issue="public bucket", severity=Severity.HIGH)
+    finding = CloudFinding(
+        resource=_public_resource(), issue="public bucket", severity=Severity.HIGH
+    )
     assert finding.issue == "public bucket"
     assert finding.severity is Severity.HIGH
 
@@ -46,3 +48,25 @@ def test_cloud_finding_exposed() -> None:
 def test_cloud_finding_rejects_empty_issue() -> None:
     with pytest.raises(ValueError):
         CloudFinding(resource=_public_resource(), issue="")
+
+
+def test_cloud_finding_rejects_blank_issue() -> None:
+    with pytest.raises(ValueError):
+        CloudFinding(resource=_public_resource(), issue="   ")
+
+
+def test_cloud_finding_rejects_non_resource() -> None:
+    with pytest.raises(ValueError):
+        CloudFinding(resource="bucket", issue="x")  # type: ignore[arg-type]
+
+
+def test_cloud_finding_rejects_non_severity() -> None:
+    with pytest.raises(ValueError):
+        CloudFinding(resource=_public_resource(), issue="x", severity="high")  # type: ignore[arg-type]
+
+
+def test_cloud_finding_normalizes_issue() -> None:
+    assert (
+        CloudFinding(resource=_public_resource(), issue="  public bucket  ").issue
+        == "public bucket"
+    )
