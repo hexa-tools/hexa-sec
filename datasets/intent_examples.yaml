@@ -33,6 +33,7 @@ web_cve_templates_nuclei:
   - "Run Nuclei against the target for a security audit"
   - "Is Nuclei available and up to date for this engagement?"
   - "Scan the primary target with Nuclei and summarize the findings"
+  - "Schedule a nightly COMPLETE nuclei scan on the staging environment"
   description: Nuclei — vulnerability templates scanner (ProjectDiscovery)
 
 web_wordpress_audit:
@@ -203,6 +204,7 @@ network_enterprise_cve_scan:
   - "Run Nessus against the target for a security audit"
   - "Is Nessus available and up to date for this engagement?"
   - "Scan the primary target with Nessus and summarize the findings"
+  - "Run a nightly COMPLETE Nessus scan and exclude the bastion host"
   description: Nessus (Tenable) — enterprise vulnerability scanner
 
 network_opensource_cve_scan:
@@ -233,6 +235,7 @@ network_port_discovery:
   - "Is Nmap available and up to date for this engagement?"
   - "Scan the primary target with Nmap and summarize the findings"
   - "What did Nmap report on the latest run?"
+  - "Schedule the nmap scan outside business hours and exclude the DB host"
   description: Nmap — port and service discovery
 
 network_fast_port_scan:
