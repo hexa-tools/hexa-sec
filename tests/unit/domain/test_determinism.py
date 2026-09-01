@@ -85,7 +85,7 @@ def test_container_predicate_is_deterministic() -> None:
 
 def test_mobile_predicate_is_deterministic() -> None:
     finding = MobileFinding(
-        package="com.acme.app", platform=MobilePlatform.ANDROID, issue="secret", secret_type=SecretType.API_KEY
+        package="com.acme.app", platform=MobilePlatform.ANDROID, issue="secret", secret_type=SecretType.APIKEY
     )
     assert finding.embeds_secret() is True
     assert finding.embeds_secret() is True
