@@ -29,6 +29,7 @@ class NucleiAdapter(WebScannerPort):
             raise ScannerUnavailableError("nuclei image is not approved")
         request = ToolExecutionRequest(
             image=image.image,
+            digest=image.digest,
             command="nuclei",
             tool=_TOOL,
             arguments=("-u", asset, "-json"),

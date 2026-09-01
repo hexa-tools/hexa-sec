@@ -21,7 +21,7 @@ from hexa_sec.application.ports.driven.execution_port import (
     ToolExecutionRequest,
     ToolExecutionResult,
 )
-from hexa_sec.domain.errors import SecurityPolicyError
+from hexa_sec.domain.errors import ScannerUnavailableError, SecurityPolicyError
 
 _IMAGE_OP_TIMEOUT = 180.0
 _FORBIDDEN_SENSITIVE = ("/var/run/docker.sock", ".ssh", ".aws", ".env", "/etc/shadow")
@@ -40,8 +40,9 @@ class DockerRuntime(ToolExecutionPort):
 
     def execute(self, request: ToolExecutionRequest) -> ToolExecutionResult:
         self._validate_security(request)
-        self._ensure_image(request.image)
-        container = self._start(request)
+        image_ref = self._image_ref(request.image, request.digest)
+        self._ensure_image(image_ref)
+        container = self._start(request, image_ref)
         started = time.monotonic()
         try:
             exit_code, timed_out = self._wait(container, request.timeout)
@@ -55,7 +56,7 @@ class DockerRuntime(ToolExecutionPort):
         metadata = ExecutionMetadata(
             tool=request.tool,
             runtime="docker",
-            image=request.image,
+            image=image_ref,
             status=status,
             exit_code=exit_code,
             duration_ms=duration_ms,
@@ -72,9 +73,11 @@ class DockerRuntime(ToolExecutionPort):
             metadata=metadata,
         )
 
-    def _start(self, request: ToolExecutionRequest) -> str:
+    def _start(self, request: ToolExecutionRequest, image_ref: str) -> str:
         name = f"hexa-sec-{request.execution_id or uuid.uuid4().hex[:8]}"
-        result = self._runner.run(self._run_command(request, name), timeout=_IMAGE_OP_TIMEOUT)
+        result = self._runner.run(
+            self._run_command(request, name, image_ref), timeout=_IMAGE_OP_TIMEOUT
+        )
         if result.returncode != 0:
             raise SecurityPolicyError(f"container start failed: {result.stderr.strip()}")
         return result.stdout.strip()
@@ -87,22 +90,26 @@ class DockerRuntime(ToolExecutionPort):
             return -9, True
         return wait.returncode, False
 
-    def _ensure_image(self, image: str) -> None:
+    def _ensure_image(self, image_ref: str) -> None:
         if (
             self._runner.run(
-                ["docker", "image", "inspect", image], timeout=_IMAGE_OP_TIMEOUT
+                ["docker", "image", "inspect", image_ref], timeout=_IMAGE_OP_TIMEOUT
             ).returncode
             != 0
         ):
-            self._runner.run(["docker", "pull", image], timeout=_IMAGE_OP_TIMEOUT)
+            pull = self._runner.run(["docker", "pull", image_ref], timeout=_IMAGE_OP_TIMEOUT)
+            if pull.returncode != 0:
+                raise ScannerUnavailableError(
+                    f"image pull failed for {image_ref}: {pull.stderr.strip()}"
+                )
 
-    def _run_command(self, request: ToolExecutionRequest, name: str) -> list[str]:
+    def _run_command(self, request: ToolExecutionRequest, name: str, image_ref: str) -> list[str]:
         command = ["docker", "run", "-d", "--name", name, "--network", request.network]
         command += self._resource_flags(request.resources)
         command += self._mount_flags(request.mounts)
         for key, value in request.environment.items():
             command += ["-e", f"{key}={value}"]
-        command += [request.image, request.command, *request.arguments]
+        command += [image_ref, request.command, *request.arguments]
         return command
 
     @staticmethod
@@ -135,6 +142,12 @@ class DockerRuntime(ToolExecutionPort):
         if exit_code == 0:
             return ExecutionStatus.COMPLETED
         return ExecutionStatus.FAILED
+
+    @staticmethod
+    def _image_ref(image: str, digest: str | None) -> str:
+        if not digest:
+            raise SecurityPolicyError(f"immutable digest required for '{image}' (no :latest)")
+        return f"{image}@{digest}"
 
     def _validate_security(self, request: ToolExecutionRequest) -> None:
         if request.network not in self._allowed_networks:

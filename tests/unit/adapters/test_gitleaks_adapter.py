@@ -36,7 +36,7 @@ class _FakeExecution:
 
 class _FakeImagePolicy:
     def resolve(self, tool: str) -> ImageRef:
-        return ImageRef(image="zricethezav/gitleaks")
+        return ImageRef(image="zricethezav/gitleaks", digest="sha256:c00b6")
 
 
 def test_gitleaks_builds_request_and_parses_secrets() -> None:
@@ -46,6 +46,7 @@ def test_gitleaks_builds_request_and_parses_secrets() -> None:
     records = adapter.scan("acme/repo")
     assert execution._request is not None
     assert execution._request.command == "gitleaks"
+    assert execution._request.digest == "sha256:c00b6"
     assert records[0]["path"] == "src/.env"
     assert records[0]["rule_id"] == "generic-api-key"
 

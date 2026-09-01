@@ -36,7 +36,7 @@ class _FakeExecution:
 
 class _FakeImagePolicy:
     def resolve(self, tool: str) -> ImageRef:
-        return ImageRef(image="projectdiscovery/nuclei")
+        return ImageRef(image="projectdiscovery/nuclei", digest="sha256:582d55")
 
 
 def test_nuclei_builds_request_and_parses_json() -> None:
@@ -46,6 +46,7 @@ def test_nuclei_builds_request_and_parses_json() -> None:
     records = adapter.scan("https://app.example")
     assert execution._request is not None
     assert execution._request.command == "nuclei"
+    assert execution._request.digest == "sha256:582d55"
     assert records[0]["url"] == "app.example"
     assert records[0]["severity"] == "critical"
 

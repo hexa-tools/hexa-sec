@@ -31,6 +31,7 @@ families:
         type: local
         docker: true
         image: projectdiscovery/nuclei
+        digest: sha256:582d5546902e67052097cb2d07296c642d50a1afc5e44623cb038845df9a32eb
         description: "Nuclei — vulnerability templates scanner (ProjectDiscovery)"
         questions:
           - "Run nuclei against the public API endpoints with critical severity only"
@@ -192,6 +193,7 @@ families:
         type: local
         docker: true
         image: instrumentisto/nmap
+        digest: sha256:96f6ed194519b62421a1a1c57809e65a7f94d2aa1c8c25676f247e5e148c0827
         description: "Nmap — port and service discovery"
         questions:
           - "Nmap scan the staging environment for open ports and versions"
@@ -402,6 +404,7 @@ families:
         type: local
         docker: true
         image: zricethezav/gitleaks
+        digest: sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f
         description: "Gitleaks — detect hardcoded secrets in git repositories"
         questions:
           - "Scan the backend repo with gitleaks for hardcoded API keys"

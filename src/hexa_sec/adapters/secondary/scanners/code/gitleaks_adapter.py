@@ -29,6 +29,7 @@ class GitleaksAdapter(CodeScannerPort):
             raise ScannerUnavailableError("gitleaks image is not approved")
         request = ToolExecutionRequest(
             image=image.image,
+            digest=image.digest,
             command="gitleaks",
             tool=_TOOL,
             arguments=("detect", "--source", repo, "--report-format", "json", "--report-path", "-"),

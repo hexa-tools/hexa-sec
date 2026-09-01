@@ -27,6 +27,7 @@ def test_ephemeral_container_runs_and_is_removed() -> None:
     runtime = DockerRuntime(runner)
     request = ToolExecutionRequest(
         image="alpine",
+        digest="sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b",
         command="echo",
         arguments=("hello",),
         network="none",

@@ -74,6 +74,7 @@ class ToolExecutionRequest:
     image: str
     command: str
     tool: str = ""
+    digest: str | None = None
     arguments: tuple[str, ...] = ()
     environment: dict[str, str] = field(default_factory=dict)
     mounts: tuple[Mount, ...] = ()

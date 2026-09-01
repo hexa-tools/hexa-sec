@@ -72,6 +72,19 @@ def test_tool_request_carries_args_and_env() -> None:
     assert request.timeout == 30.0
 
 
+def test_tool_request_carries_immutable_digest() -> None:
+    request = ToolExecutionRequest(
+        image="instrumentisto/nmap",
+        digest="sha256:96f6ed194519b62421a1a1c57809e65a7f94d2aa1c8c25676f247e5e148c0827",
+        command="nmap",
+    )
+    assert request.digest == "sha256:96f6ed194519b62421a1a1c57809e65a7f94d2aa1c8c25676f247e5e148c0827"
+
+
+def test_tool_request_defaults_no_digest() -> None:
+    assert ToolExecutionRequest(image="nmap:7", command="nmap").digest is None
+
+
 def test_tool_execution_result_creation() -> None:
     metadata = ExecutionMetadata(
         tool="network_port_discovery",

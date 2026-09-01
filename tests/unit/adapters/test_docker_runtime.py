@@ -14,7 +14,7 @@ from hexa_sec.application.ports.driven.execution_port import (
     ResourceLimits,
     ToolExecutionRequest,
 )
-from hexa_sec.domain.errors import SecurityPolicyError
+from hexa_sec.domain.errors import ScannerUnavailableError, SecurityPolicyError
 
 
 class _FakeRunner:
@@ -25,6 +25,7 @@ class _FakeRunner:
         container_id: str = "ctr-1",
         inspect_rc: int = 0,
         run_rc: int = 0,
+        pull_rc: int = 0,
     ) -> None:
         self.calls: list[tuple[list[str], float | None]] = []
         self.wait_timed_out = wait_timed_out
@@ -32,6 +33,7 @@ class _FakeRunner:
         self.container_id = container_id
         self.inspect_rc = inspect_rc
         self.run_rc = run_rc
+        self.pull_rc = pull_rc
         self.fail_on: str | None = None
 
     def run(self, command: list[str], timeout: float | None = None) -> CommandResult:
@@ -47,12 +49,15 @@ class _FakeRunner:
             return CommandResult(0, "PORT   STATE\n80/tcp open", "")
         if sub == "image":
             return CommandResult(self.inspect_rc, "", "")
+        if sub == "pull":
+            return CommandResult(self.pull_rc, "", "")
         return CommandResult(0, "", "")
 
 
 def _request(**overrides: object) -> ToolExecutionRequest:
     defaults: dict[str, object] = {
-        "image": "instrumentisto/nmap:7",
+        "image": "instrumentisto/nmap",
+        "digest": "sha256:abc",
         "command": "nmap",
         "arguments": ("-sV", "10.0.0.1"),
         "network": "none",
@@ -62,6 +67,24 @@ def _request(**overrides: object) -> ToolExecutionRequest:
     }
     defaults.update(overrides)
     return ToolExecutionRequest(**defaults)
+
+
+def test_execute_refuses_without_digest() -> None:
+    # deny-by-default : pas de tag glissant, une image sans digest est refusée
+    with pytest.raises(SecurityPolicyError):
+        DockerRuntime(_FakeRunner()).execute(_request(digest=None))
+
+
+def test_execute_pulls_by_image_at_digest() -> None:
+    runner = _FakeRunner(inspect_rc=1)
+    DockerRuntime(runner).execute(_request())
+    pull = next(cmd for cmd, _ in runner.calls if cmd[:2] == ["docker", "pull"])
+    assert "instrumentisto/nmap@sha256:abc" in pull
+
+
+def test_metadata_image_is_digest_ref() -> None:
+    result = DockerRuntime(_FakeRunner()).execute(_request())
+    assert result.metadata.image == "instrumentisto/nmap@sha256:abc"
 
 
 def test_execute_success_and_cleanup() -> None:
@@ -136,6 +159,13 @@ def test_image_pulled_when_not_present() -> None:
     runner = _FakeRunner(inspect_rc=1)
     DockerRuntime(runner).execute(_request())
     assert any(cmd[:2] == ["docker", "pull"] for cmd, _ in runner.calls)
+
+
+def test_pull_failure_raises_scanner_error() -> None:
+    # catégorie « erreur & propagation » : un pull échoué -> ScannerUnavailableError
+    # (jamais un :latest glissant, jamais une erreur brute).
+    with pytest.raises(ScannerUnavailableError):
+        DockerRuntime(_FakeRunner(inspect_rc=1, pull_rc=1)).execute(_request())
 
 
 def test_container_start_failure_raises() -> None:

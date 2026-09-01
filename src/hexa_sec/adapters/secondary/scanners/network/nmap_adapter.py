@@ -33,6 +33,7 @@ class NmapAdapter(NetworkScannerPort):
             raise ScannerUnavailableError("nmap image is not approved")
         request = ToolExecutionRequest(
             image=image.image,
+            digest=image.digest,
             command="nmap",
             tool=_TOOL,
             arguments=("-sV", asset),

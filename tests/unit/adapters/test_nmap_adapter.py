@@ -20,7 +20,7 @@ class _FakeImagePolicy:
         self._image = image
 
     def resolve(self, tool: str) -> ImageRef | None:
-        return ImageRef(image=self._image) if self._image else None
+        return ImageRef(image=self._image, digest="sha256:abc") if self._image else None
 
 
 class _FakeExecution:
@@ -49,6 +49,7 @@ def test_nmap_builds_argv_and_parses_ports() -> None:
     records = adapter.scan("10.0.0.1")
     assert execution._request is not None
     assert execution._request.command == "nmap"
+    assert execution._request.digest == "sha256:abc"
     assert execution._request.arguments == ("-sV", "10.0.0.1")
     assert len(records) == 2
     assert records[0]["port"] == 80
