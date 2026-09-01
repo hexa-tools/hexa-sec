@@ -47,3 +47,11 @@ def test_try_except_in_service_flagged() -> None:
         "try:\n    pass\nexcept Exception:\n    pass\n",
     )
     assert any(v.startswith("R6") for v in violations)
+
+
+def test_docker_in_adapter_outside_execution_flagged() -> None:
+    violations = find_violations(
+        "src/hexa_sec/adapters/secondary/scanners/network/nmap_adapter.py",
+        'subprocess.run(["docker", "run", "-d", image])',
+    )
+    assert any(v.startswith("R9") for v in violations)

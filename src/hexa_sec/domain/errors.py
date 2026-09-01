@@ -85,3 +85,7 @@ class ReportStoreError(HexaSecError):
 
 class TenantIsolationError(HexaSecError):
     """A tenant scoped operation crossed tenant boundaries."""
+
+
+class SecurityPolicyError(HexaSecError):
+    """A tool execution request violated the deny-by-default security policy."""
