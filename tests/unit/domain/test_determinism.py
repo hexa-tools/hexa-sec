@@ -28,12 +28,16 @@ from hexa_sec.domain.dns_risk.subdomain import Subdomain
 from hexa_sec.domain.email_risk.dmarc_status import DmarcStatus
 from hexa_sec.domain.email_risk.email_finding import EmailFinding
 from hexa_sec.domain.email_risk.email_record import EmailRecord
+from hexa_sec.domain.finding.finding import FindingId
 from hexa_sec.domain.mobile_risk.mobile_finding import MobileFinding
 from hexa_sec.domain.mobile_risk.mobile_platform import MobilePlatform
+from hexa_sec.domain.report.priority_action import PriorityAction
+from hexa_sec.domain.report.report import Report, ReportId
 from hexa_sec.domain.scan.scan import Scan, ScanId
 from hexa_sec.domain.scan.scan_depth import ScanDepth
 from hexa_sec.domain.scan.scan_parameters import ScanParameters
 from hexa_sec.domain.scan.scan_status import ScanStatus
+from hexa_sec.domain.scoring.risk_score import RiskScore
 from hexa_sec.domain.secret_risk.secret_type import SecretType
 from hexa_sec.domain.wifi_risk.ssid import Ssid
 from hexa_sec.domain.wifi_risk.wifi_finding import WifiFinding
@@ -132,6 +136,43 @@ def test_asset_inventory_with_entry_is_reproducible() -> None:
     b = _inventory().with_entry(InventoryEntry(host="10.0.0.1", port=Port(22), application=Application("ssh")))
     assert a == b
     assert a.count() == 2
+
+
+def _report() -> Report:
+    return Report(
+        report_id=ReportId("rep_0001"),
+        title="Audit report",
+        global_score=RiskScore.from_value(62.0),
+        top_actions=(_priority_action(),),
+    )
+
+
+def _priority_action() -> PriorityAction:
+    return PriorityAction(
+        finding_id=FindingId("fnd_0001"),
+        issue="Exposed API key",
+        why="Account takeover risk",
+        fix="Rotate the key",
+        effort="5 min",
+        risk_score=RiskScore.from_value(95.0),
+    )
+
+
+def test_report_is_deterministic() -> None:
+    # catégorie 7 — un rapport identique produit des sections identiques, dans
+    # l'ordre, entre deux constructions.
+    first = _report()
+    second = _report()
+    assert first == second
+    assert first.sections() == second.sections()
+    assert first.top_actions == second.top_actions
+
+
+def test_priority_action_is_deterministic() -> None:
+    # catégorie 7 — la même action produite deux fois est identique et son
+    # score de priorité est stable.
+    assert _priority_action() == _priority_action()
+    assert _priority_action().risk_score.value == 95.0
 
 
 def test_scan_creation_is_deterministic() -> None:
