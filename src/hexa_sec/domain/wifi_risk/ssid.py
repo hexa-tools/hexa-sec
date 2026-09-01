@@ -27,5 +27,6 @@ class Bssid:
     value: str
 
     def __post_init__(self) -> None:
-        if not self.value:
+        if not self.value.strip():
             raise ValueError("bssid cannot be empty")
+        object.__setattr__(self, "value", self.value.strip())

@@ -43,3 +43,18 @@ def test_wifi_finding_with_bssid() -> None:
         ssid=Ssid("Office"), security=WifiSecurity.WPA3, bssid=Bssid("AA:BB:CC:DD:EE:FF")
     )
     assert finding.bssid is not None
+
+
+def test_wifi_finding_rejects_non_ssid() -> None:
+    with pytest.raises(ValueError):
+        WifiFinding(ssid="Office", security=WifiSecurity.WPA2)  # type: ignore[arg-type]
+
+
+def test_wifi_finding_rejects_non_security() -> None:
+    with pytest.raises(ValueError):
+        WifiFinding(ssid=Ssid("Office"), security="wpa2")  # type: ignore[arg-type]
+
+
+def test_wifi_finding_rejects_non_bssid() -> None:
+    with pytest.raises(ValueError):
+        WifiFinding(ssid=Ssid("Office"), security=WifiSecurity.WPA2, bssid="AA:BB:CC:DD:EE:FF")  # type: ignore[arg-type]

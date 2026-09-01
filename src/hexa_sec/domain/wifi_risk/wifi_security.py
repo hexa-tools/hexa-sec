@@ -17,3 +17,12 @@ class WifiSecurity(Enum):
     @property
     def weak(self) -> bool:
         return self in (WifiSecurity.OPEN, WifiSecurity.WEP, WifiSecurity.WPA)
+
+    @classmethod
+    def normalize(cls, raw: str) -> WifiSecurity:
+        """Map a raw label to a ``WifiSecurity``; unknown values are rejected."""
+        cleaned = raw.strip().lower().replace(" ", "_").replace("-", "_")
+        try:
+            return cls(cleaned)
+        except ValueError as error:
+            raise ValueError(f"unknown wifi security: {raw}") from error

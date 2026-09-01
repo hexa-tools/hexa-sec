@@ -19,6 +19,12 @@ class WifiFinding:
     clients: int = 0
 
     def __post_init__(self) -> None:
+        if not isinstance(self.ssid, Ssid):
+            raise ValueError("wifi finding ssid must be an Ssid")
+        if not isinstance(self.security, WifiSecurity):
+            raise ValueError("wifi finding security must be a WifiSecurity")
+        if self.bssid is not None and not isinstance(self.bssid, Bssid):
+            raise ValueError("wifi finding bssid must be a Bssid")
         if self.clients < 0:
             raise ValueError("clients cannot be negative")
 
