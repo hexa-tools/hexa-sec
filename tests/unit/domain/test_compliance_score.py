@@ -22,5 +22,28 @@ def test_compliance_score_rejects_out_of_range() -> None:
 
 
 def test_compliance_score_levels() -> None:
-    assert ComplianceScore(scope=ComplianceScope.PCI_DSS, value=95).level() is ComplianceLevel.COMPLIANT
-    assert ComplianceScore(scope=ComplianceScope.PCI_DSS, value=40).level() is ComplianceLevel.NON_COMPLIANT
+    assert (
+        ComplianceScore(scope=ComplianceScope.PCI_DSS, value=95).level()
+        is ComplianceLevel.COMPLIANT
+    )
+    assert (
+        ComplianceScore(scope=ComplianceScope.PCI_DSS, value=40).level()
+        is ComplianceLevel.NON_COMPLIANT
+    )
+
+
+def test_compliance_score_accepts_bounds() -> None:
+    assert ComplianceScore(scope=ComplianceScope.ISO_27001, value=0).value == 0
+    assert ComplianceScore(scope=ComplianceScope.ISO_27001, value=100).value == 100
+
+
+def test_compliance_score_threshold_boundaries() -> None:
+    assert (
+        ComplianceScore(scope=ComplianceScope.RGPD, value=85).level() is ComplianceLevel.COMPLIANT
+    )
+    assert ComplianceScore(scope=ComplianceScope.RGPD, value=84).level() is ComplianceLevel.ADEQUATE
+    assert ComplianceScore(scope=ComplianceScope.RGPD, value=60).level() is ComplianceLevel.ADEQUATE
+    assert (
+        ComplianceScore(scope=ComplianceScope.RGPD, value=59).level()
+        is ComplianceLevel.NON_COMPLIANT
+    )
