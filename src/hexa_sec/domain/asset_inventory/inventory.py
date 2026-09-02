@@ -7,6 +7,7 @@ of a single asset.
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 
 from hexa_sec.domain.asset_inventory.port import Application, Port, Version
@@ -24,6 +25,11 @@ class InventoryEntry:
     def __post_init__(self) -> None:
         if not self.host.strip():
             raise ValueError("inventory host cannot be empty")
+        if not isinstance(self.port, Port):
+            raise ValueError("inventory port must be a Port")
+        if not isinstance(self.application, Application):
+            raise ValueError("inventory application must be an Application")
+        object.__setattr__(self, "host", self.host.strip())
 
 
 @dataclass(frozen=True)
@@ -36,6 +42,7 @@ class AssetInventory:
     def __post_init__(self) -> None:
         if not self.host.strip():
             raise ValueError("inventory host cannot be empty")
+        object.__setattr__(self, "host", self.host.strip())
         for entry in self.entries:
             if entry.host != self.host:
                 raise ValueError("entry host must match the inventory host")
@@ -45,6 +52,23 @@ class AssetInventory:
             if key in seen:
                 raise ValueError(f"duplicate port/application in inventory: {key}")
             seen.add(key)
+
+    @classmethod
+    def for_asset(cls, host: str, entries: Iterable[InventoryEntry]) -> AssetInventory:
+        """Consolidate the entries of one asset, deduplicated by port."""
+        normalized = host.strip()
+        if not normalized:
+            raise ValueError("inventory host cannot be empty")
+        seen: set[int] = set()
+        consolidated: list[InventoryEntry] = []
+        for entry in entries:
+            if entry.host != normalized:
+                continue
+            if entry.port.number in seen:
+                continue
+            seen.add(entry.port.number)
+            consolidated.append(entry)
+        return cls(host=normalized, entries=tuple(consolidated))
 
     def open_ports(self) -> tuple[Port, ...]:
         return tuple(entry.port for entry in self.entries)

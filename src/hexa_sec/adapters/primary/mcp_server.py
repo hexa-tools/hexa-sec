@@ -32,13 +32,37 @@ from hexa_sec.application.ports.driving.score_report.score_report_service_port i
 
 
 def scan_asset_handler(
-    service: ScanAssetServicePort, asset: str, mandate_id: str, vendor: str
+    service: ScanAssetServicePort,
+    asset: str,
+    mandate_id: str,
+    vendor: str,
+    tenant_id: str,
+    depth: str = "complete",
+    exclusions: tuple[str, ...] = (),
 ) -> ScanAssetResult:
-    return service.scan({"asset": asset, "mandate_id": mandate_id, "vendor": vendor})
+    return service.scan(
+        {
+            "asset": asset,
+            "mandate_id": mandate_id,
+            "vendor": vendor,
+            "tenant_id": tenant_id,
+            "depth": depth,
+            "exclusions": exclusions,
+        }
+    )
 
 
 def correlate_handler(service: CorrelateServicePort, scan_id: str) -> CorrelateResult:
-    return service.correlate({"scan_id": scan_id})
+    return service.correlate(
+        {
+            "scan_id": scan_id,
+            "signals": (),
+            "previous": (),
+            "asset_criticalities": {},
+            "exposure_open_ports": 3,
+            "noise_count": 10,
+        }
+    )
 
 
 def score_report_handler(service: ScoreReportServicePort, scan_id: str) -> ScoreReportResult:
@@ -81,8 +105,8 @@ def build_server(
     server = MCPServer(name="hexa-sec")
 
     @server.tool()
-    def scan_asset(asset: str, mandate_id: str, vendor: str) -> ScanAssetResult:
-        return scan_asset_handler(scan_asset_svc, asset, mandate_id, vendor)
+    def scan_asset(asset: str, mandate_id: str, vendor: str, tenant_id: str) -> ScanAssetResult:
+        return scan_asset_handler(scan_asset_svc, asset, mandate_id, vendor, tenant_id)
 
     @server.tool()
     def correlate(scan_id: str) -> CorrelateResult:

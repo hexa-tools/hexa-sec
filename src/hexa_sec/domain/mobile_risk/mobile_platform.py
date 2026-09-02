@@ -10,3 +10,12 @@ class MobilePlatform(Enum):
 
     ANDROID = "android"
     IOS = "ios"
+
+    @classmethod
+    def normalize(cls, raw: str) -> MobilePlatform:
+        """Map a raw label to a ``MobilePlatform``; unknown values are rejected."""
+        cleaned = raw.strip().lower().replace(" ", "_").replace("-", "_")
+        try:
+            return cls(cleaned)
+        except ValueError as error:
+            raise ValueError(f"unknown mobile platform: {raw}") from error
