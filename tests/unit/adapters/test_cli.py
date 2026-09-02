@@ -21,7 +21,8 @@ def test_cli_scan_command_routes_through_use_case() -> None:
 def test_cli_correlate_command_routes_through_use_case() -> None:
     runner = CliRunner()
     result = runner.invoke(build_cli(), ["correlate", "--scan-id", "scan_0001"])
-    assert result.exception is not None
+    assert result.exception is None
+    assert result.exit_code == 0
 
 
 def test_cli_report_command_routes_through_use_case() -> None:

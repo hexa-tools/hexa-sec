@@ -1,51 +1,65 @@
 # US-2 correlate — la corrélation déterministe (LE CŒUR)
 
-Le use case `correlate` croise les findings normalisés de plusieurs scanners
-pour révéler la chaîne d'attaque, l'exposition réelle et le bruit qu'aucun
-outil seul ne voit. Il est 100 % déterministe : peu importe le scanner, le
-croisement produit les mêmes corrélations pour les mêmes entrées.
+Le use case `correlate` croise les findings normalisés de plusieurs scanners sur
+des assets partagés pour révéler la chaîne d'attaque, l'exposition réelle et le
+bruit qu'aucun outil seul ne voit. Il est 100 % déterministe : les mêmes findings
+donnent les mêmes corrélations. Le SLM n'intervient **jamais** ici — code pur,
+zéro I/O.
 
 ```mermaid
 sequenceDiagram
-    participant Correlate as correlate (US-2)
-    participant Correlation as correlation
-    participant Normalize as Scanner Adapter
-    participant Scanner as Scanners (burst)
+    participant CLI as CLI/MCP Adapter
+    participant Port as CorrelateServicePort
+    participant UC as CorrelateUseCase
+    participant Svc as CorrelateService
+    participant Domain as Domain (correlation)
+    participant Knowledge as KnowledgePort (NVD/EPSS)
 
-    Scanner->>Normalize: findings (normalisés)
-    Normalize->>Correlation: FindingId par asset
-    Correlation->>Correlation: croisement déterministe (attack-chain/exposure/noise/...)
-    Correlation-->>Correlate: Correlation (type, assets, findings, impact, reason)
-    Correlate-->>Correlate: chaîne d'attaque racontée en langage clair
+    CLI->>Port: correlate (scan_id, signals, previous, criticalities)
+    Port->>UC: execute (command)
+    UC->>Svc: correlate (command)
+    Svc->>Domain: CorrelationContext (seuils, previous, criticalities)
+    Svc->>Domain: correlate(signals, context) — 6 types
+    Domain->>Knowledge: enrichir (EPSS/CVE) [Phase future]
+    Knowledge-->>Domain: données
+    Domain-->>Svc: tuple[Correlation] (type, assets, findings, impact, reason)
+    Svc-->>UC: CorrelateResult (records normalisés)
+    UC-->>Port: result
+    Port-->>CLI: corrélations + raisons
 ```
 
 ## Key Points
 
-- Les scanners ne sont **jamais** connus du domaine : les adapters normalisent
-  chaque sortie en `CorrelationInput` (asset, `FindingKind`, severité).
-- 6 familles déterministes : attack-chain, exposure, noise-reduction, temporal,
-  compliance, business-impact.
-- **Aucune spéculation** : une corrélation sans finding source est rejetée.
-- Aucune corrélation trouvée → tuple vide (pas un échec) ; dédup par
-  `CorrelationId` (même type + même asset + mêmes findings = une seule).
-- Le mandat (consent) est obligatoire : les findings corrélés proviennent d'un
-  scan couvert par le périmètre.
+- **6 types déterministes** (domaine `correlation_checker`) : attack-chain,
+  exposure, noise-reduction, temporal, compliance, business-impact. C'est le
+  **domaine** qui réalise la valeur (déjà implémenté + testé).
+- **`CorrelateService`** est un **orchestrateur fin** : il construit le
+  `CorrelationContext` (seuils, `previous`, `asset_criticalities`) depuis le
+  command et appelle le domaine `correlate()`. **Zéro I/O, zéro LLM, zéro
+  try/catch (R6)**.
+- **Command/Result** : `CorrelateCommand` (scan_id, signals, previous,
+  asset_criticalities, exposure_open_ports, noise_count) ;
+  `CorrelateResult.correlations` = `list[CorrelationRecord]` (type + reason en
+  langage clair + findings/preuve + impact).
+- **Jamais spéculatif** : une corrélation sans finding source est rejetée dans le
+  domaine (`Correlation.__post_init__`) ; une reason vide est rejetée.
+- **Isolation tenant** : les `signals`/`criticalities` sont scopées par l'appelant
+  (`scan_id` → tenant) ; les findings d'un autre tenant ne sont jamais croisés.
+- Les adapters (CLI/MCP) passent par `correlate_handler` ; l'enrichissement
+  `KnowledgePort` (EPSS/CVE) est une extension future, pas un prérequis des 6
+  types.
 
 ## Test Coverage
 
 | Fichier | Couverture de branches |
 |---|---|
-| `domain/correlation/correlation.py` | 100 % |
-| `domain/correlation/correlation_checker.py` | 98 % (2 branches d'impact dérivées) |
-| `domain/correlation/correlation_context.py` | 100 % |
-| `domain/correlation/correlation_input.py` | 100 % |
-| `domain/correlation/correlation_type.py` | 100 % |
-| `domain/correlation/finding_kind.py` | 100 % |
-| `domain/correlation/impact_score.py` | 100 % |
+| `application/service/correlate_service.py` | 100 % |
+| `application/ports/driving/correlate/correlate_service_port.py` | 100 % |
 
 ## Related Files
 
-- `src/hexa_sec/domain/correlation/correlation_checker.py` — le croisement déterministe
-- `src/hexa_sec/domain/correlation/correlation.py` — le VO `Correlation`
-- `src/hexa_sec/domain/correlation/` — les value objects du contexte
-- `tests/unit/domain/test_correlation_checker.py` — les scénarios des 6 corrélations
+- `src/hexa_sec/application/service/correlate_service.py` — l'orchestrateur fin
+- `src/hexa_sec/domain/correlation/correlation_checker.py` — les 6 détecteurs (le cœur)
+- `src/hexa_sec/domain/correlation/correlation_context.py` — le contexte déterministe
+- `src/hexa_sec/application/ports/driving/correlate/correlate_service_port.py` — command/result
+- `tests/unit/application/test_correlate_service.py` — scénarios des 6 types
