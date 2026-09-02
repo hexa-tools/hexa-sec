@@ -89,3 +89,8 @@ class TenantIsolationError(HexaSecError):
 
 class SecurityPolicyError(HexaSecError):
     """A tool execution request violated the deny-by-default security policy."""
+
+
+# ── Scan orchestration ─────────────────────────────────────────────────
+class ScanConfigurationError(HexaSecError):
+    """The scan could not be orchestrated (e.g. no scanner wired)."""
