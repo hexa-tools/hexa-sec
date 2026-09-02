@@ -38,7 +38,16 @@ def scan_asset_handler(
 
 
 def correlate_handler(service: CorrelateServicePort, scan_id: str) -> CorrelateResult:
-    return service.correlate({"scan_id": scan_id})
+    return service.correlate(
+        {
+            "scan_id": scan_id,
+            "signals": (),
+            "previous": (),
+            "asset_criticalities": {},
+            "exposure_open_ports": 3,
+            "noise_count": 10,
+        }
+    )
 
 
 def score_report_handler(service: ScoreReportServicePort, scan_id: str) -> ScoreReportResult:
