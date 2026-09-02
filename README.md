@@ -1,7 +1,7 @@
 # hexa-sec
 
 [![Python](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
-[![Tests](https://img.shields.io/badge/tests-1057_passed-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-1065_passed-brightgreen.svg)]()
 [![codecov](https://codecov.io/gh/hexa-tools/hexa-sec/branch/main/graph/badge.svg)](https://codecov.io/gh/hexa-tools/hexa-sec)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
