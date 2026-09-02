@@ -10,8 +10,13 @@ from hexa_sec.application.ports.driving.scan_asset.scan_asset_service_port impor
 
 
 class _FakeScanAsset:
-    def scan(self, command: ScanAssetCommand) -> dict[str, str]:
-        return {"scan_id": command["mandate_id"], "status": "pending"}
+    def scan(self, command: ScanAssetCommand) -> dict[str, object]:
+        return {
+            "scan_id": command["mandate_id"],
+            "status": "pending",
+            "mandate_id": command["mandate_id"],
+            "findings": [],
+        }
 
 
 class _FakeCorrelate:
@@ -51,14 +56,28 @@ def test_build_server_registers_five_tools() -> None:
 
 
 def test_scan_asset_handler_delegates() -> None:
-    result = scan_asset_handler(_FakeScanAsset(), asset="10.0.0.1", mandate_id="mnd_0001", vendor="nessus")
+    result = scan_asset_handler(
+        _FakeScanAsset(),
+        asset="10.0.0.1",
+        mandate_id="mnd_0001",
+        vendor="nessus",
+        tenant_id="tnt_0001",
+    )
     assert result["status"] == "pending"
 
 
 def test_scan_asset_tool_via_call_tool() -> None:
     server = _server()
     result = asyncio.run(
-        server.call_tool("scan_asset", {"asset": "10.0.0.1", "mandate_id": "mnd_0001", "vendor": "nessus"})
+        server.call_tool(
+            "scan_asset",
+            {
+                "asset": "10.0.0.1",
+                "mandate_id": "mnd_0001",
+                "vendor": "nessus",
+                "tenant_id": "tnt_0001",
+            },
+        )
     )
     assert result.is_error is False
 

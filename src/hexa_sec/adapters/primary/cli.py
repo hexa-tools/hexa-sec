@@ -59,9 +59,10 @@ def build_cli() -> click.Group:
     @click.option("--asset", required=True)
     @click.option("--mandate-id", required=True)
     @click.option("--vendor", default="nessus")
-    def scan_cmd(asset: str, mandate_id: str, vendor: str) -> ScanAssetResult:
+    @click.option("--tenant-id", required=True)
+    def scan_cmd(asset: str, mandate_id: str, vendor: str, tenant_id: str) -> ScanAssetResult:
         """Lancer un scan — le mandat est vérifié avant (loi Godfrain)."""
-        return scan_asset_handler(_scan_use_case(), asset, mandate_id, vendor)
+        return scan_asset_handler(_scan_use_case(), asset, mandate_id, vendor, tenant_id)
 
     @cli.command(name="correlate")
     @click.option("--scan-id", required=True)
