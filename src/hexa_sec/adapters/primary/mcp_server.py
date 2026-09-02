@@ -66,7 +66,7 @@ def correlate_handler(service: CorrelateServicePort, scan_id: str) -> CorrelateR
 
 
 def score_report_handler(service: ScoreReportServicePort, scan_id: str) -> ScoreReportResult:
-    return service.score({"scan_id": scan_id})
+    return service.score({"scan_id": scan_id, "items": ()})
 
 
 def manage_mandate_handler(
