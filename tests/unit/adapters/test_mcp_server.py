@@ -26,7 +26,12 @@ class _FakeCorrelate:
 
 class _FakeScore:
     def score(self, command: dict[str, str]) -> dict[str, object]:
-        return {"scan_id": command["scan_id"], "score": 62, "label": "moderate"}
+        return {
+            "scan_id": command["scan_id"],
+            "score": 62,
+            "label": "moderate",
+            "ordered": (),
+        }
 
 
 class _FakeMandate:
