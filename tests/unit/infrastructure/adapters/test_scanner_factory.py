@@ -6,8 +6,10 @@ import pytest
 
 from hexa_sec.infrastructure.adapters.secondary.scanners.scanner_factory import create_scanner_adapter
 from hexa_sec.infrastructure.adapters.secondary.scanners.network.nmap_adapter import NmapAdapter
+from hexa_sec.infrastructure.adapters.secondary.scanners.web.burp_adapter import BurpAdapter
 from hexa_sec.infrastructure.adapters.secondary.scanners.web.nuclei_adapter import NucleiAdapter
 from hexa_sec.application.ports.driven.network_scanner_port import NetworkScannerPort
+from hexa_sec.application.ports.driven.web_scanner_port import WebScannerPort
 from hexa_sec.domain.errors import ScannerUnavailableError
 
 
@@ -30,6 +32,12 @@ def test_factory_creates_nmap() -> None:
 def test_factory_creates_nuclei() -> None:
     adapter = create_scanner_adapter("web_cve_templates_nuclei", _NoopExecution(), _NoopImagePolicy())
     assert isinstance(adapter, NucleiAdapter)
+
+
+def test_factory_creates_burp() -> None:
+    adapter = create_scanner_adapter("web_vuln_scan_burp", _NoopExecution(), _NoopImagePolicy())
+    assert isinstance(adapter, BurpAdapter)
+    assert isinstance(adapter, WebScannerPort)
 
 
 def test_factory_rejects_unknown_vendor() -> None:
