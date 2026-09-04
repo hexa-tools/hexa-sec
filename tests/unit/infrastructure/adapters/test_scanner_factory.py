@@ -8,6 +8,7 @@ from hexa_sec.infrastructure.adapters.secondary.scanners.scanner_factory import 
 from hexa_sec.infrastructure.adapters.secondary.scanners.network.nmap_adapter import NmapAdapter
 from hexa_sec.infrastructure.adapters.secondary.scanners.web.burp_adapter import BurpAdapter
 from hexa_sec.infrastructure.adapters.secondary.scanners.web.nuclei_adapter import NucleiAdapter
+from hexa_sec.infrastructure.adapters.secondary.scanners.web.zap_adapter import ZapAdapter
 from hexa_sec.application.ports.driven.network_scanner_port import NetworkScannerPort
 from hexa_sec.application.ports.driven.web_scanner_port import WebScannerPort
 from hexa_sec.domain.errors import ScannerUnavailableError
@@ -37,6 +38,12 @@ def test_factory_creates_nuclei() -> None:
 def test_factory_creates_burp() -> None:
     adapter = create_scanner_adapter("web_vuln_scan_burp", _NoopExecution(), _NoopImagePolicy())
     assert isinstance(adapter, BurpAdapter)
+    assert isinstance(adapter, WebScannerPort)
+
+
+def test_factory_creates_zap() -> None:
+    adapter = create_scanner_adapter("web_vuln_scan_zap", _NoopExecution(), _NoopImagePolicy())
+    assert isinstance(adapter, ZapAdapter)
     assert isinstance(adapter, WebScannerPort)
 
 
