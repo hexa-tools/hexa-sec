@@ -25,17 +25,20 @@ def test_cert_status_normalize_accepts_known_values() -> None:
     assert CertStatus.normalize("EXPIRED") is CertStatus.EXPIRED
     assert CertStatus.normalize("invalid chain") is CertStatus.INVALIDCHAIN
     assert CertStatus.normalize("self_signed") is CertStatus.SELFSIGNED
+    assert CertStatus.normalize("self-signed") is CertStatus.SELFSIGNED
+    assert CertStatus.normalize("invalid-chain") is CertStatus.INVALIDCHAIN
+
     assert CertStatus.normalize("expiring") is CertStatus.EXPIRING
     assert CertStatus.normalize("ok") is CertStatus.OK
 
 
 def test_cert_status_normalize_rejects_unknown() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="unknown cert status: revoked"):
         CertStatus.normalize("revoked")
 
 
 def test_cert_status_normalize_rejects_blank() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="unknown cert status:"):
         CertStatus.normalize("   ")
 
 

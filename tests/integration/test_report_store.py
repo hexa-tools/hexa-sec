@@ -9,7 +9,7 @@ from __future__ import annotations
 import pytest
 from pathlib import Path
 
-from hexa_sec.adapters.secondary.report_store.sqlite_report_store import SqliteReportStore
+from hexa_sec.infrastructure.adapters.secondary.report_store.sqlite_report_store import SqliteReportStore
 
 
 @pytest.mark.integration

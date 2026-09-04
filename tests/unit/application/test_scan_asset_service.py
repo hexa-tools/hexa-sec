@@ -67,8 +67,10 @@ class _Audit(AuditTrailPort):
 class _Repo(MandateRepositoryPort):
     def __init__(self, mandate: Mandate | None) -> None:
         self._mandate = mandate
+        self.requested: list[str] = []
 
     def load(self, mandate_id: str) -> Mandate | None:
+        self.requested.append(mandate_id)
         return self._mandate
 
 
@@ -87,46 +89,99 @@ def _command(**overrides: object) -> ScanAssetCommand:
 
 def _service(
     mandate: Mandate | None = None, repo: _Repo | None = None
-) -> tuple[ScanAssetService, _Audit]:
+) -> tuple[ScanAssetService, _Audit, _Repo]:
     audit = _Audit()
+    repo = repo or _Repo(mandate)
     service = ScanAssetService(
-        mandate_repo=repo or _Repo(mandate),
+        mandate_repo=repo,
         web_scanner=_WebScanner(),
         network_scanner=_NetworkScanner(),
         code_scanner=_CodeScanner(),
         audit_trail=audit,
     )
-    return service, audit
+    return service, audit, repo
 
 
 def test_scan_runs_scanners_and_traces() -> None:
-    service, audit = _service(_mandate())
+    service, audit, repo = _service(_mandate())
     result = service.scan(_command())
     assert result["scan_id"].startswith("scan_")
     assert result["status"] == "pending"
     assert result["mandate_id"] == "mnd_0001"
+    assert repo.requested == ["mnd_0001"]
     assert len(result["findings"]) == 3
     assert len(audit.records) == 1
-    assert audit.records[0]["scan_id"] == result["scan_id"]
-    assert audit.records[0]["mandate_id"] == "mnd_0001"
-    assert audit.records[0]["tenant_id"] == "tnt_0001"
+    record = audit.records[0]
+    assert record["entry_id"] == result["scan_id"]
+    assert record["scan_id"] == result["scan_id"]
+    assert record["mandate_id"] == "mnd_0001"
+    assert record["action"] == "scan"
+    assert record["actor"] == "operator"
+    assert record["image"] == "nessus"
+    assert record["tenant_id"] == "tnt_0001"
+    assert record["digest"] == ""
+    assert record["duration_ms"] >= 0
+    assert record["recorded_at"].endswith("+00:00")
+    web, network, code = result["findings"]
+    assert web["url"] == "http://10.0.0.1/x"
+    assert network["host"] == "10.0.0.1"
+    assert code["path"] == "src/app.py"
+
+
+def test_scan_reports_duration_in_milliseconds(monkeypatch: pytest.MonkeyPatch) -> None:
+    import hexa_sec.application.service.scan_asset_service as scan_module
+
+    timestamps = iter([100.0, 101.5])
+    monkeypatch.setattr(scan_module.time, "perf_counter", lambda: next(timestamps))
+    service, audit, _ = _service(_mandate())
+    service.scan(_command())
+    assert audit.records[0]["duration_ms"] == 1500
+
+
+def test_scan_passes_asset_to_every_wired_scanner() -> None:
+    calls: dict[str, list[object]] = {"web": [], "network": [], "code": []}
+
+    class _WebSpy(WebScannerPort):
+        def scan(self, asset: str) -> list[dict[str, str]]:
+            calls["web"].append(asset)
+            return []
+
+    class _NetworkSpy(NetworkScannerPort):
+        def scan(self, asset: str) -> list[dict[str, object]]:
+            calls["network"].append(asset)
+            return []
+
+    class _CodeSpy(CodeScannerPort):
+        def scan(self, repo: str) -> list[dict[str, str]]:
+            calls["code"].append(repo)
+            return []
+
+    service = ScanAssetService(
+        mandate_repo=_Repo(_mandate()),
+        web_scanner=_WebSpy(),
+        network_scanner=_NetworkSpy(),
+        code_scanner=_CodeSpy(),
+        audit_trail=_Audit(),
+    )
+    service.scan(_command())
+    assert calls == {"web": ["10.0.0.1"], "network": ["10.0.0.1"], "code": ["10.0.0.1"]}
 
 
 def test_scan_mandate_not_found() -> None:
-    service, _ = _service(None)
-    with pytest.raises(MandateNotFoundError):
+    service, _, _ = _service(None)
+    with pytest.raises(MandateNotFoundError, match="no mandate for the requested scan"):
         service.scan(_command())
 
 
 def test_scan_target_out_of_scope() -> None:
-    service, _ = _service(_mandate(targets=("192.168.1.1",)))
-    with pytest.raises(MandateScopeError):
+    service, _, _ = _service(_mandate(targets=("192.168.1.1",)))
+    with pytest.raises(MandateScopeError, match="10.0.0.1"):
         service.scan(_command())
 
 
 def test_scan_offensive_requires_offensive_mandate() -> None:
-    service, _ = _service(_mandate(level=MandateLevel.STANDARD))
-    with pytest.raises(MandateLevelError):
+    service, _, _ = _service(_mandate(level=MandateLevel.STANDARD))
+    with pytest.raises(MandateLevelError, match="offensive"):
         service.scan(_command(depth="offensive"))
 
 
@@ -138,7 +193,7 @@ def test_scan_rejects_when_no_scanner() -> None:
         code_scanner=None,
         audit_trail=_Audit(),
     )
-    with pytest.raises(ScanConfigurationError):
+    with pytest.raises(ScanConfigurationError, match="^at least one scanner port is required$"):
         service.scan(_command())
 
 
@@ -158,7 +213,7 @@ def test_scan_scanner_error_propagates() -> None:
 
 def test_scan_without_mandate_repo_is_not_found() -> None:
     service = ScanAssetService()
-    with pytest.raises(MandateNotFoundError):
+    with pytest.raises(MandateNotFoundError, match="^no mandate repository wired$"):
         service.scan(_command())
 
 

@@ -30,10 +30,10 @@ def test_secret_type_normalize_accepts_known_values() -> None:
 
 
 def test_secret_type_normalize_rejects_unknown() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="unknown secret type: beyond_the_veil"):
         SecretType.normalize("beyond_the_veil")
 
 
 def test_secret_type_normalize_rejects_blank() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="unknown secret type:"):
         SecretType.normalize("   ")

@@ -21,7 +21,7 @@ class IocType(Enum):
     @classmethod
     def normalize(cls, raw: str) -> IocType:
         """Map a raw label to an ``IocType``; unknown values are rejected."""
-        cleaned = raw.strip().lower().replace(" ", "_").replace("-", "_")
+        cleaned = raw.strip().lower()
         try:
             return cls(cleaned)
         except ValueError as error:

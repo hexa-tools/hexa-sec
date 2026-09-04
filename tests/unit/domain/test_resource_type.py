@@ -25,6 +25,9 @@ def test_resource_type_unique_values() -> None:
 
 def test_resource_type_normalize_accepts_known_values() -> None:
     assert ResourceType.normalize("aws s3 bucket") is ResourceType.AWS_S3_BUCKET
+    assert ResourceType.normalize("aws-s3-bucket") is ResourceType.AWS_S3_BUCKET
+    assert ResourceType.normalize("aws-security-group") is ResourceType.AWS_SECURITY_GROUP
+
     assert ResourceType.normalize("AWS_SECURITY_GROUP") is ResourceType.AWS_SECURITY_GROUP
     assert ResourceType.normalize("azure_storage_account") is ResourceType.AZURE_STORAGE_ACCOUNT
     assert ResourceType.normalize("terraform") is ResourceType.TERRAFORM
@@ -32,12 +35,12 @@ def test_resource_type_normalize_accepts_known_values() -> None:
 
 
 def test_resource_type_normalize_rejects_unknown() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="unknown resource type: k8s_cronjob"):
         ResourceType.normalize("k8s_cronjob")
 
 
 def test_resource_type_normalize_rejects_blank() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="unknown resource type:"):
         ResourceType.normalize("   ")
 
 

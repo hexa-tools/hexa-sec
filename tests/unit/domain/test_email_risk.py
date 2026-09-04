@@ -41,6 +41,27 @@ def test_of_keeps_worst_dmarc() -> None:
     assert risk.findings[0].spoofable() is True
 
 
+def test_of_keeps_worst_dmarc_missing_over_none() -> None:
+    missing = _finding("acme.example", DmarcStatus.MISSING)
+    none = _finding("acme.example", DmarcStatus.NONE)
+    assert EmailRisk.of((missing, none)).findings[0].dmarc is DmarcStatus.MISSING
+    assert EmailRisk.of((none, missing)).findings[0].dmarc is DmarcStatus.MISSING
+
+
+def test_of_keeps_worst_dmarc_none_over_quarantine() -> None:
+    none = _finding("acme.example", DmarcStatus.NONE)
+    quarantine = _finding("acme.example", DmarcStatus.QUARANTINE)
+    assert EmailRisk.of((none, quarantine)).findings[0].dmarc is DmarcStatus.NONE
+    assert EmailRisk.of((quarantine, none)).findings[0].dmarc is DmarcStatus.NONE
+
+
+def test_of_keeps_worst_dmarc_quarantine_over_reject() -> None:
+    quarantine = _finding("acme.example", DmarcStatus.QUARANTINE)
+    reject = _finding("acme.example", DmarcStatus.REJECT)
+    assert EmailRisk.of((quarantine, reject)).findings[0].dmarc is DmarcStatus.QUARANTINE
+    assert EmailRisk.of((reject, quarantine)).findings[0].dmarc is DmarcStatus.QUARANTINE
+
+
 def test_of_spoofable_domains() -> None:
     findings = (
         _finding("acme.example", DmarcStatus.MISSING),

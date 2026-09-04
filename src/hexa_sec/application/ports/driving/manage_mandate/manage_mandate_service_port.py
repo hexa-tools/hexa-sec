@@ -7,13 +7,16 @@ from typing import TypedDict
 
 
 class ManageMandateCommand(TypedDict):
-    """Input: what the client authorizes."""
+    """Input: what the client authorizes, signed."""
 
     client: str
     targets: list[str]
     start_date: str
     end_date: str
     level: str
+    signature: str
+    actor: str
+    tenant_id: str
 
 
 class ManageMandateResult(TypedDict):
@@ -28,5 +31,5 @@ class ManageMandateServicePort(ABC):
 
     @abstractmethod
     def create(self, command: ManageMandateCommand) -> ManageMandateResult:
-        """Register a signed mandate."""
+        """Register a signed mandate, and trace the consent decision."""
         raise NotImplementedError  # pragma: no cover

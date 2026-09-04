@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import pytest
 
-from hexa_sec.adapters.primary.mcp_server import (
+from hexa_sec.infrastructure.adapters.primary.mcp_server import (
     correlate_handler,
     generate_report_handler,
     manage_mandate_handler,
@@ -64,10 +64,26 @@ class FakeReport:
 
 @pytest.mark.e2e
 def test_full_mocked_flow() -> None:
-    mandate = manage_mandate_handler(FakeMandate(), "Acme", ["10.0.0.1"], "2026-01-01", "2026-12-31", "standard")
+    mandate = manage_mandate_handler(
+        FakeMandate(),
+        "Acme",
+        ["10.0.0.1"],
+        "2026-01-01",
+        "2026-12-31",
+        "standard",
+        signature="REF-2026-0001",
+        actor="operator",
+        tenant_id="tnt_0001",
+    )
     assert mandate["mandate_id"] == "mnd_0001"
 
-    scan = scan_asset_handler(FakeScan(), asset="10.0.0.1", mandate_id=mandate["mandate_id"], vendor="nessus")
+    scan = scan_asset_handler(
+        FakeScan(),
+        asset="10.0.0.1",
+        mandate_id=mandate["mandate_id"],
+        vendor="nessus",
+        tenant_id="tnt_0001",
+    )
     assert scan["status"] == "done"
 
     score = FakeScore().score({"scan_id": scan["scan_id"]})

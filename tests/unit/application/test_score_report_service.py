@@ -49,8 +49,9 @@ def test_score_valid_components_with_coherent_label() -> None:
     )
     score = result["ordered"][0]["score"]
     assert 0 <= score <= 100
-    assert result["ordered"][0]["label"] == result["label"]
-    assert result["score"] == score
+    assert result["score"] == 100
+    assert result["label"] == "critical"
+    assert result["ordered"][0]["label"] == "critical"
 
 
 def test_sort_descending_fix_first() -> None:
@@ -95,3 +96,12 @@ def test_equal_scores_order_is_stable() -> None:
     second = ScoreReportService().score(_command(items=(high_b, high_a)))
     assert first == second
     assert [item["finding_id"] for item in first["ordered"]] == ["fnd_a", "fnd_b"]
+
+
+def test_all_components_contribute_to_the_score() -> None:
+    full = _item("fnd_full", "critical", exploitability=1.0, exposure=0.8, impact=0.6, facility=0.3)
+    without_exposure = _item(
+        "fnd_partial", "critical", exploitability=1.0, impact=0.6, facility=0.3
+    )
+    assert ScoreReportService().score(_command(items=(full,)))["score"] == 84
+    assert ScoreReportService().score(_command(items=(without_exposure,)))["score"] == 85

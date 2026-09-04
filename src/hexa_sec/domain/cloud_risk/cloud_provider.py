@@ -15,7 +15,7 @@ class CloudProvider(Enum):
     @classmethod
     def normalize(cls, raw: str) -> CloudProvider:
         """Map a raw label to a ``CloudProvider``; unknown values are rejected."""
-        cleaned = raw.strip().lower().replace(" ", "_").replace("-", "_")
+        cleaned = raw.strip().lower()
         try:
             return cls(cleaned)
         except ValueError as error:

@@ -30,12 +30,12 @@ def test_access_risk_normalize_accepts_known_values() -> None:
 
 
 def test_access_risk_normalize_rejects_unknown() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="unknown access risk: domain_admin"):
         AccessRisk.normalize("domain_admin")
 
 
 def test_access_risk_normalize_rejects_blank() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="unknown access risk:"):
         AccessRisk.normalize("   ")
 
 

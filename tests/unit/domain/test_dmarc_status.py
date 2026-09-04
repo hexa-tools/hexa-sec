@@ -31,11 +31,21 @@ def test_dmarc_status_normalize_accepts_policy_format() -> None:
     assert DmarcStatus.normalize("v=DMARC1; p=reject") is DmarcStatus.REJECT
 
 
+def test_dmarc_status_normalize_accepts_compact_policy_record() -> None:
+    # enregistrement DMARC sans espace autour des ';' — le 'p=' doit être trouvé
+    assert DmarcStatus.normalize("v=DMARC1;p=quarantine") is DmarcStatus.QUARANTINE
+
+
 def test_dmarc_status_normalize_rejects_unknown() -> None:
     with pytest.raises(ValueError):
         DmarcStatus.normalize("p=softfail")
     with pytest.raises(ValueError):
         DmarcStatus.normalize("v=DMARC1")
+
+
+def test_dmarc_status_normalize_rejects_unknown_with_stable_message() -> None:
+    with pytest.raises(ValueError, match="unknown dmarc status: p=softfail"):
+        DmarcStatus.normalize("p=softfail")
 
 
 def test_dmarc_status_normalize_rejects_blank() -> None:

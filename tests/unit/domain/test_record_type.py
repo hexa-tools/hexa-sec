@@ -27,10 +27,10 @@ def test_record_type_normalize_accepts_known() -> None:
 
 
 def test_record_type_normalize_rejects_unknown() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="unknown record type: srv"):
         RecordType.normalize("srv")
 
 
 def test_record_type_normalize_rejects_blank() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="unknown record type:"):
         RecordType.normalize("   ")
