@@ -31,7 +31,7 @@ class AccessRisk(Enum):
     @classmethod
     def normalize(cls, raw: str) -> AccessRisk:
         """Map a raw label to an ``AccessRisk``; unknown values are rejected."""
-        cleaned = raw.strip().lower().replace(" ", "_").replace("-", "_")
+        cleaned = raw.strip().lower()
         try:
             return cls(cleaned)
         except ValueError as error:

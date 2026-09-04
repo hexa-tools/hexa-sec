@@ -25,12 +25,12 @@ def test_priority_normalize_accepts_known() -> None:
 
 
 def test_priority_normalize_rejects_unknown() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="unknown priority: urgent"):
         Priority.normalize("urgent")
 
 
 def test_priority_normalize_rejects_blank() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="unknown priority:"):
         Priority.normalize("   ")
 
 

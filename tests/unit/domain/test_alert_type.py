@@ -27,11 +27,17 @@ def test_alert_type_normalize_accepts_known() -> None:
     assert AlertType.normalize("fix-resolved") is AlertType.FIX_RESOLVED
 
 
+def test_alert_type_normalize_collapses_repeated_separators() -> None:
+    # séparateurs répétés -> le compact (sans '_') doit quand même matcher
+    assert AlertType.normalize("NEW  SECRET") is AlertType.NEWSECRET
+    assert AlertType.normalize("fix--resolved") is AlertType.FIX_RESOLVED
+
+
 def test_alert_type_normalize_rejects_unknown() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="unknown alert type: quota_exceeded"):
         AlertType.normalize("quota_exceeded")
 
 
 def test_alert_type_normalize_rejects_blank() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="unknown alert type:"):
         AlertType.normalize("   ")

@@ -25,10 +25,10 @@ def test_exposure_normalize_accepts_known_values() -> None:
 
 
 def test_exposure_normalize_rejects_unknown() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="unknown exposure value: hyperspace"):
         Exposure.normalize("hyperspace")
 
 
 def test_exposure_normalize_rejects_blank() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="unknown exposure value:"):
         Exposure.normalize("   ")

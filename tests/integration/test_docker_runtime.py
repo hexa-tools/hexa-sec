@@ -10,8 +10,8 @@ import shutil
 
 import pytest
 
-from hexa_sec.adapters.secondary.execution.docker_command_runner import CliDockerCommandRunner
-from hexa_sec.adapters.secondary.execution.docker_runtime import DockerRuntime
+from hexa_sec.infrastructure.adapters.secondary.execution.docker_command_runner import CliDockerCommandRunner
+from hexa_sec.infrastructure.adapters.secondary.execution.docker_runtime import DockerRuntime
 from hexa_sec.application.ports.driven.execution_port import ExecutionStatus, ToolExecutionRequest
 
 

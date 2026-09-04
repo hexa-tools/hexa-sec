@@ -66,6 +66,7 @@ def test_attack_chain_detected() -> None:
     assert record["type"] == CorrelationType.ATTACK_CHAIN.value
     assert record["reason"].strip()
     assert set(record["findings"]) == {"fnd_1", "fnd_2", "fnd_3"}
+    assert record["impact"] in {"critical", "high", "medium", "low"}
 
 
 def test_exposure_detected() -> None:

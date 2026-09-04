@@ -30,3 +30,11 @@ def test_normalize_rejects_unknown() -> None:
         OwaspApiCategory.normalize("api11")
     with pytest.raises(ValueError):
         OwaspApiCategory.normalize("bogus")
+
+
+def test_normalize_rejects_unknown_with_stable_message() -> None:
+    # hors bornes (api11) et non-chiffres (bogus) rejetés avec un message stable
+    with pytest.raises(ValueError, match="unknown OWASP API category: api11"):
+        OwaspApiCategory.normalize("api11")
+    with pytest.raises(ValueError, match="unknown OWASP API category: bogus"):
+        OwaspApiCategory.normalize("bogus")

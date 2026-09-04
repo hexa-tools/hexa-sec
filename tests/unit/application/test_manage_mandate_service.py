@@ -45,10 +45,16 @@ def test_create_valid_mandate_and_trace() -> None:
     assert result["level"] == "standard"
     assert len(audit.records) == 1
     record = audit.records[0]
+    assert record["entry_id"] == result["mandate_id"]
+    assert record["scan_id"] == ""
     assert record["mandate_id"] == result["mandate_id"]
     assert record["action"] == "consent"
     assert record["actor"] == "operator"
+    assert record["image"] == "Acme Corp"
+    assert record["digest"] == ""
+    assert record["duration_ms"] == 0
     assert record["tenant_id"] == "tnt_0001"
+    assert record["recorded_at"].endswith("+00:00")
 
 
 def test_create_rejects_empty_signature() -> None:

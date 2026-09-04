@@ -16,6 +16,11 @@ def test_protocol_strength_of_known_versions() -> None:
     assert ProtocolStrength.of("TLSv1.3").rank == 4
 
 
+def test_protocol_strength_accepts_dashed_versions() -> None:
+    assert ProtocolStrength.of("TLS-1.2").rank == 3
+    assert ProtocolStrength.of("TLSv1.2").version == "TLS 1.2"
+
+
 def test_protocol_strength_rejects_unknown() -> None:
     with pytest.raises(ValueError):
         ProtocolStrength.of("TLS 9.9")

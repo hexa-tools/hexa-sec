@@ -21,7 +21,7 @@ class WifiSecurity(Enum):
     @classmethod
     def normalize(cls, raw: str) -> WifiSecurity:
         """Map a raw label to a ``WifiSecurity``; unknown values are rejected."""
-        cleaned = raw.strip().lower().replace(" ", "_").replace("-", "_")
+        cleaned = raw.strip().lower()
         try:
             return cls(cleaned)
         except ValueError as error:

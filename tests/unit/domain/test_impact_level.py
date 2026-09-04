@@ -27,12 +27,12 @@ def test_impact_level_normalize_accepts_known() -> None:
 
 
 def test_impact_level_normalize_rejects_unknown() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="unknown impact level: vital"):
         ImpactLevel.normalize("vital")
 
 
 def test_impact_level_normalize_rejects_blank() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="unknown impact level:"):
         ImpactLevel.normalize("   ")
 
 
