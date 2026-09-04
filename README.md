@@ -1,7 +1,7 @@
 # hexa-sec
 
 [![Python](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
-[![Tests](https://img.shields.io/badge/tests-1134_passed-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-1169_passed-brightgreen.svg)]()
 [![codecov](https://codecov.io/gh/hexa-tools/hexa-sec/branch/main/graph/badge.svg)](https://codecov.io/gh/hexa-tools/hexa-sec)
 [![Mutation](https://img.shields.io/badge/mutation-96.6%25-brightgreen.svg)](docs/mutation/PROGRESS.md)
 [![Mutation Python](https://img.shields.io/badge/mutation--python-96.6%25-brightgreen.svg)](docs/mutation/PROGRESS.md)
