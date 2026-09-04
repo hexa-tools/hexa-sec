@@ -82,11 +82,31 @@ def build_cli() -> click.Group:
     @click.option("--start", required=True)
     @click.option("--end", required=True)
     @click.option("--level", default="standard")
+    @click.option("--signature", required=True)
+    @click.option("--actor", default="operator")
+    @click.option("--tenant-id", required=True)
     def mandate_cmd(
-        client: str, target: tuple[str, ...], start: str, end: str, level: str
+        client: str,
+        target: tuple[str, ...],
+        start: str,
+        end: str,
+        level: str,
+        signature: str,
+        actor: str,
+        tenant_id: str,
     ) -> ManageMandateResult:
         """Enregistrer le consentement légal mandat."""
-        return manage_mandate_handler(_mandate_use_case(), client, list(target), start, end, level)
+        return manage_mandate_handler(
+            _mandate_use_case(),
+            client,
+            list(target),
+            start,
+            end,
+            level,
+            signature,
+            actor,
+            tenant_id,
+        )
 
     return cli
 

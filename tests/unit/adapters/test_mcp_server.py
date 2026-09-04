@@ -110,6 +110,9 @@ def test_manage_mandate_tool_via_call_tool() -> None:
                 "start_date": "2026-01-01",
                 "end_date": "2026-12-31",
                 "level": "standard",
+                "signature": "REF-2026-0001",
+                "actor": "operator",
+                "tenant_id": "tnt_0001",
             },
         )
     )
