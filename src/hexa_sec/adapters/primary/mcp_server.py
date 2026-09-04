@@ -76,6 +76,9 @@ def manage_mandate_handler(
     start_date: str,
     end_date: str,
     level: str,
+    signature: str,
+    actor: str,
+    tenant_id: str,
 ) -> ManageMandateResult:
     return service.create(
         {
@@ -84,6 +87,9 @@ def manage_mandate_handler(
             "start_date": start_date,
             "end_date": end_date,
             "level": level,
+            "signature": signature,
+            "actor": actor,
+            "tenant_id": tenant_id,
         }
     )
 
@@ -123,9 +129,20 @@ def build_server(
         start_date: str,
         end_date: str,
         level: str,
+        signature: str,
+        actor: str,
+        tenant_id: str,
     ) -> ManageMandateResult:
         return manage_mandate_handler(
-            manage_mandate_svc, client, targets, start_date, end_date, level
+            manage_mandate_svc,
+            client,
+            targets,
+            start_date,
+            end_date,
+            level,
+            signature,
+            actor,
+            tenant_id,
         )
 
     @server.tool()

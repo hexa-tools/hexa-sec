@@ -1,9 +1,17 @@
 # hexa-sec
 
 [![Python](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
-[![Tests](https://img.shields.io/badge/tests-1071_passed-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-1075_passed-brightgreen.svg)]()
 [![codecov](https://codecov.io/gh/hexa-tools/hexa-sec/branch/main/graph/badge.svg)](https://codecov.io/gh/hexa-tools/hexa-sec)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+
+<p>
+  <img
+    src="assets/hexa-sec.svg"
+    alt="Hexa-sec"
+    width="800"
+  />
+</p>
 
 > **Nessus trouve des failles. Burp trouve des failles. hexa-sec trouve la
 > faille qui compte.**
