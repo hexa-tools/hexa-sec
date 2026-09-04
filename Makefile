@@ -163,6 +163,65 @@ rust-test:
 	@echo "✅ Rust tests passed"
 
 # ─────────────────────────────────────
+#  Mutation testing (Python mutmut + Rust cargo-mutants)
+# ─────────────────────────────────────
+
+# mutation-python : run COMPLET frais (sandbox purgé) — chiffres officiels.
+# mutation-python-module : run ciblé par module/glob, sans purge (itération).
+#   Ex : make mutation-python-module MODULE="hexa_sec.domain.correlation*"
+# mutation-results / mutation-show : inspecter le dernier run.
+#   Ex : make mutation-show ID=hexa_sec.domain.X.y__mutmut_42
+# mutation-rust : cargo-mutants frais (outputs purgés, legacy .old supprimé).
+
+.PHONY: mutation mutation-python mutation-python-module mutation-results mutation-show \
+	mutation-rust mutation-report mutation-badge mutation-clean
+
+mutation-python:
+	@echo "🧬 Running Python mutation testing (fresh full run, mutmut)..."
+	rm -rf mutants
+	$(POETRY) run mutmut run --max-children 8
+	@echo "🧬 Python mutation done — see mutants/mutmut-cicd-stats.json"
+	$(POETRY) run mutmut export-cicd-stats
+	@echo "✅ Python mutation stats exported"
+
+mutation-python-module:
+	@echo "🧬 Running Python mutation on module: $(MODULE)..."
+	$(POETRY) run mutmut run "$(MODULE)" --max-children 8
+	@echo "✅ Module mutation done"
+
+mutation-results:
+	@echo "🧬 Surviving mutants of the last run:"
+	$(POETRY) run mutmut results
+
+mutation-show:
+	@echo "🧬 Showing mutant $(ID):"
+	$(POETRY) run mutmut show "$(ID)"
+
+mutation-rust:
+	@echo "🧬 Running Rust mutation testing (cargo-mutants, fresh)..."
+	rm -rf $(RUST_DIR)/mutants.out $(RUST_DIR)/mutants.out.old
+	cd $(RUST_DIR) && cargo mutants --no-times
+	@echo "✅ Rust mutation done — see rust/mutants.out/outcomes.json"
+
+mutation-report:
+	@echo "📊 Aggregating mutation results (Python + Rust)..."
+	$(PYTHON) scripts/mutation_report.py
+	@echo "✅ Mutation report written"
+
+mutation-badge:
+	@echo "🏷️  Updating mutation badge in README.md..."
+	$(PYTHON) scripts/mutation_report.py --badge
+	@echo "✅ Mutation badge updated"
+
+mutation: mutation-python mutation-rust mutation-report
+	@echo "✅ Mutation testing complete"
+
+mutation-clean:
+	@echo "🧹 Cleaning mutation sandbox and reports..."
+	rm -rf mutants rust/mutants.out rust/mutants.out.old
+	@echo "✅ Mutation artifacts cleaned"
+
+# ─────────────────────────────────────
 #  All gates
 # ─────────────────────────────────────
 
@@ -228,6 +287,17 @@ help:
 	@echo "  make rust-build            → maturin develop --release"
 	@echo "  make rust-check            → cargo fmt --check + cargo clippy -D warnings"
 	@echo "  make rust-test             → cargo test --workspace"
+	@echo ""
+	@echo "🧬 MUTATION TESTING (quality — slow, run before merge)"
+	@echo "  make mutation-python       → fresh full mutmut run + stats (official numbers)"
+	@echo "  make mutation-python-module MODULE=... → mutmut scoped to a module glob"
+	@echo "  make mutation-results      → list surviving mutants of the last run"
+	@echo "  make mutation-show ID=...  → show the diff of one mutant"
+	@echo "  make mutation-rust         → fresh cargo-mutants on the parse crate"
+	@echo "  make mutation-report       → aggregate Python + Rust into report.json"
+	@echo "  make mutation-badge        → update the README mutation badge"
+	@echo "  make mutation-clean        → purge sandbox (mutants/ + rust/mutants.out*)"
+	@echo "  make mutation              → python + rust + report"
 	@echo ""
 	@echo "🔨 ALL"
 	@echo "  make all                   → check + guard + test + coverage + rust-check + rust-test"

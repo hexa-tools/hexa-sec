@@ -32,10 +32,10 @@ def test_wifi_security_normalize_accepts_known() -> None:
 
 
 def test_wifi_security_normalize_rejects_unknown() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="unknown wifi security: wpa4"):
         WifiSecurity.normalize("wpa4")
 
 
 def test_wifi_security_normalize_rejects_blank() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="unknown wifi security:"):
         WifiSecurity.normalize("   ")

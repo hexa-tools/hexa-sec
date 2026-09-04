@@ -25,10 +25,10 @@ def test_cloud_provider_normalize_accepts_known() -> None:
 
 
 def test_cloud_provider_normalize_rejects_unknown() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="unknown cloud provider: oci"):
         CloudProvider.normalize("oci")
 
 
 def test_cloud_provider_normalize_rejects_blank() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="unknown cloud provider:"):
         CloudProvider.normalize("   ")

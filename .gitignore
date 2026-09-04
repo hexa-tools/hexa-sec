@@ -15,6 +15,18 @@ htmlcov/
 
 .venv/
 
+# mutation testing — mutmut sandbox (copies src/tests) and reports
+mutants/
+mutation-reports/
+*.htmlcov/
+
+# cargo-mutants — Rust mutation testing output lives in target/ (ignored above)
+.mutants.out/
+mutants.out/
+
+# generated mutation report (produced by scripts/mutation_report.py / CI)
+docs/mutation/report.json
+
 dist/
 build/
 *.egg-info/

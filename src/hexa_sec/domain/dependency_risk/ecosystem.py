@@ -23,7 +23,7 @@ class Ecosystem(Enum):
     @classmethod
     def normalize(cls, raw: str) -> Ecosystem:
         """Map a raw label to an ``Ecosystem``; unknown values are rejected."""
-        cleaned = raw.strip().lower().replace(" ", "_").replace("-", "_")
+        cleaned = raw.strip().lower()
         try:
             return cls(cleaned)
         except ValueError as error:

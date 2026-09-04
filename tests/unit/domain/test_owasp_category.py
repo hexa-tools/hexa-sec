@@ -46,5 +46,15 @@ def test_normalize_rejects_unknown() -> None:
         OwaspCategory.normalize("bogus")
 
 
+def test_normalize_distinguishes_malformed_from_unknown() -> None:
+    # malformé (préfixe a non suivi de chiffres) vs bien formé mais inconnu
+    with pytest.raises(ValueError, match="invalid OWASP category: a0x"):
+        OwaspCategory.normalize("a0x")
+    with pytest.raises(ValueError, match="unknown OWASP category: a99"):
+        OwaspCategory.normalize("a99")
+    with pytest.raises(ValueError, match="unknown OWASP category: a1"):
+        OwaspCategory.normalize("a1")
+
+
 def test_from_code_roundtrip() -> None:
     assert OwaspCategory.from_code("a01") is OwaspCategory.BROKEN_ACCESS_CONTROL

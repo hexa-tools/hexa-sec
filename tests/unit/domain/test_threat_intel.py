@@ -126,3 +126,37 @@ def _permutations(values: tuple[Threat, ...]) -> list[tuple[Threat, ...]]:
         for tail in _permutations(rest):
             out.append((values[index],) + tail)
     return out
+
+
+def _same_key_threat(assets: tuple[AssetId, ...], findings: tuple[FindingId, ...]) -> Threat:
+    return Threat(
+        actor=ThreatActor("APT-41", "APT-41 group"),
+        tactic="initial_access",
+        severity=Severity.HIGH,
+        related_assets=assets,
+        related_findings=findings,
+    )
+
+
+def test_for_asset_dedup_total_order_on_assets() -> None:
+    # même sévérité & mêmes findings -> c'est le lien canonique (assets triés) qui départage
+    threat_wide = _same_key_threat(
+        (AssetId("payment-api"), AssetId("z.example")),
+        (FindingId("cve-tie"),),
+    )
+    threat_narrow = _same_key_threat(
+        (AssetId("a.example"), AssetId("payment-api")),
+        (FindingId("cve-tie"),),
+    )
+    for permutation in ((threat_wide, threat_narrow), (threat_narrow, threat_wide)):
+        risk = ThreatIntel.for_asset("payment-api", permutation)
+        assert risk.threats[0].related_assets == (AssetId("payment-api"), AssetId("z.example"))
+
+
+def test_for_asset_dedup_total_order_on_findings() -> None:
+    # même sévérité & mêmes assets -> c'est le lien canonique (findings triés) qui départage
+    threat_cve_z = _same_key_threat((AssetId("payment-api"),), (FindingId("cve-z"),))
+    threat_cve_a = _same_key_threat((AssetId("payment-api"),), (FindingId("cve-a"),))
+    for permutation in ((threat_cve_z, threat_cve_a), (threat_cve_a, threat_cve_z)):
+        risk = ThreatIntel.for_asset("payment-api", permutation)
+        assert risk.threats[0].related_findings == (FindingId("cve-z"),)

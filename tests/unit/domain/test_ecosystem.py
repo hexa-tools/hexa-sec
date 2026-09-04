@@ -29,10 +29,10 @@ def test_ecosystem_normalize_accepts_known_values() -> None:
 
 
 def test_ecosystem_normalize_rejects_unknown() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="unknown ecosystem: cobol"):
         Ecosystem.normalize("cobol")
 
 
 def test_ecosystem_normalize_rejects_blank() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="unknown ecosystem:"):
         Ecosystem.normalize("   ")

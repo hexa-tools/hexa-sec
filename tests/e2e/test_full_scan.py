@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import pytest
 
-from hexa_sec.adapters.primary.mcp_server import (
+from hexa_sec.infrastructure.adapters.primary.mcp_server import (
     correlate_handler,
     generate_report_handler,
     manage_mandate_handler,

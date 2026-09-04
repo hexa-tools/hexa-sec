@@ -1,0 +1,108 @@
+name: Mutation
+
+on:
+  schedule:
+    # Nightly quality gate — mutation testing is slow (~10 min) and never
+    # blocks a PR; it guards the deterministic core on main.
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  mutation-python:
+    name: Python mutation (mutmut, deterministic core)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Poetry
+        run: pip install poetry
+      - name: Cache Poetry env
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry
+          key: poetry-mutation-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
+      - name: Install dependencies
+        run: poetry install --with dev
+      - name: Run mutmut on the deterministic core
+        run: poetry run mutmut run --max-children 8
+      - name: Export CI/CD stats
+        run: poetry run mutmut export-cicd-stats
+      - name: Upload mutmut stats artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mutmut-stats
+          path: mutants/mutmut-cicd-stats.json
+          if-no-files-found: error
+
+  mutation-rust:
+    name: Rust mutation (cargo-mutants)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rust
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust
+      - name: Install cargo-mutants
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-mutants
+      - name: Run cargo-mutants
+        run: cargo mutants --no-times
+      - name: Upload cargo-mutants outcomes artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cargo-mutants-outcomes
+          path: rust/mutants.out/outcomes.json
+          if-no-files-found: error
+
+  mutation-report:
+    name: Aggregate mutation report (Python + Rust)
+    needs: [mutation-python, mutation-rust]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Poetry
+        run: pip install poetry
+      - name: Cache Poetry env
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry
+          key: poetry-mutation-report-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
+      - name: Install dependencies
+        run: poetry install --with dev
+      - name: Download mutmut stats
+        uses: actions/download-artifact@v4
+        with:
+          name: mutmut-stats
+          path: mutants
+      - name: Download cargo-mutants outcomes
+        uses: actions/download-artifact@v4
+        with:
+          name: cargo-mutants-outcomes
+          path: rust/mutants.out
+      - name: Aggregate into docs/mutation/report.json
+        run: poetry run python scripts/mutation_report.py
+      - name: Upload aggregated report
+        uses: actions/upload-artifact@v4
+        with:
+          name: mutation-report
+          path: docs/mutation/report.json
+          if-no-files-found: error

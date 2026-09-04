@@ -54,3 +54,19 @@ def test_compute_score_missing_components_weight_renormalized() -> None:
     high_only = compute_score(ScoreComponents(severity=Severity.HIGH))
     assert high_only is not None
     assert high_only.value == 75.0  # rank 3 / 4 -> 0.75 -> 100
+
+
+def test_compute_score_rounds_weighted_sum_to_one_decimal() -> None:
+    # Pins the exact 1-decimal rounding: a fractional weighted sum must round to
+    # one decimal (not to an integer, not kept at full precision).
+    score = compute_score(
+        ScoreComponents(
+            severity=Severity.HIGH,
+            exploitability=0.8,
+            exposure=0.6,
+            impact=0.7,
+            facility=0.333,
+        )
+    )
+    assert score is not None
+    assert score.value == 68.8

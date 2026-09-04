@@ -50,6 +50,15 @@ def test_for_asset_dedup_keeps_higher_impact() -> None:
     assert risk.gaps[0].impact is Severity.CRITICAL
 
 
+def test_for_asset_dedup_keeps_higher_impact_order_independent() -> None:
+    medium = _gap(finding_id="f-1", impact=Severity.MEDIUM)
+    critical = _gap(finding_id="f-1", impact=Severity.CRITICAL)
+    first = ComplianceRisk.for_asset("acme", (critical, medium))
+    second = ComplianceRisk.for_asset("acme", (medium, critical))
+    assert first.gaps[0].impact is Severity.CRITICAL
+    assert second.gaps[0].impact is Severity.CRITICAL
+
+
 def test_for_asset_scores_empty_scope_maximal() -> None:
     risk = ComplianceRisk.for_asset("acme", ())
     iso = next(s for s in risk.scores if s.scope is ComplianceScope.ISO_27001)
