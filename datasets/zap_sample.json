@@ -1,0 +1,35 @@
+{
+  "@program": "ZAP Automation Framework report",
+  "@generated": "2026-09-04T09:00:00Z",
+  "site": [
+    {
+      "@name": "https://app.acme.example",
+      "@host": "app.acme.example",
+      "alerts": [
+        {
+          "alertid": "40018",
+          "alert": "SQL Injection",
+          "riskcode": "2",
+          "confidence": "2",
+          "risk": "Medium",
+          "confidence_desc": "High",
+          "url": "https://app.acme.example/login",
+          "param": "user",
+          "description": "The request may be vulnerable to SQL injection.",
+          "solution": "Use parameterized queries."
+        },
+        {
+          "alertid": "10038",
+          "alert": "X-Content-Type-Options header missing",
+          "riskcode": "1",
+          "confidence": "2",
+          "risk": "Low",
+          "confidence_desc": "Medium",
+          "url": "https://app.acme.example/",
+          "description": "The Anti-MIME-Sniffing header X-Content-Type-Options was not set.",
+          "solution": "Ensure the application sets the X-Content-Type-Options header."
+        }
+      ]
+    }
+  ]
+}

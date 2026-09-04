@@ -9,12 +9,16 @@ from hexa_sec.infrastructure.adapters.secondary.scanners.code.gitleaks_adapter i
     GitleaksAdapter,
 )
 from hexa_sec.infrastructure.adapters.secondary.scanners.network.nmap_adapter import NmapAdapter
+from hexa_sec.infrastructure.adapters.secondary.scanners.web.burp_adapter import BurpAdapter
 from hexa_sec.infrastructure.adapters.secondary.scanners.web.nuclei_adapter import NucleiAdapter
+from hexa_sec.infrastructure.adapters.secondary.scanners.web.zap_adapter import ZapAdapter
 
 _REGISTRY: dict[str, type] = {
+    "code_git_secrets_scan": GitleaksAdapter,
     "network_port_discovery": NmapAdapter,
     "web_cve_templates_nuclei": NucleiAdapter,
-    "code_git_secrets_scan": GitleaksAdapter,
+    "web_vuln_scan_burp": BurpAdapter,
+    "web_vuln_scan_zap": ZapAdapter,
 }
 
 
